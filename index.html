@@ -31,94 +31,135 @@
     pointer-events: none; z-index: 99;
   }
 
-  /* APP: vertical flex for portrait */
+  /* APP: three equal thirds in portrait */
   #app {
     display: flex; flex-direction: column; height: 100dvh;
-    padding: 10px;
-    padding-top: max(10px, env(safe-area-inset-top));
-    padding-bottom: max(10px, env(safe-area-inset-bottom));
-    gap: 8px;
+    padding: 8px;
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    gap: 0;
+  }
+
+  /* ── THIRD 1: Header + Radar + Readout ── */
+  #third-top {
+    flex: 1 1 33.333%;
+    display: flex; flex-direction: column; gap: 6px;
+    border-bottom: 1px solid rgba(0,153,204,0.4);
+    padding-bottom: 6px; min-height: 0;
   }
 
   /* HEADER */
   #header {
     display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid var(--blue-mid); padding-bottom: 6px; flex-shrink: 0;
+    border-bottom: 1px solid var(--blue-mid); padding-bottom: 5px; flex-shrink: 0;
   }
   .logo-area { display: flex; flex-direction: column; }
-  .logo-main { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 4px; color: var(--blue-bright); text-shadow: 0 0 20px var(--blue-bright); }
-  .logo-sub { font-size: 8px; letter-spacing: 2px; color: var(--white-dim); }
+  .logo-main { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 4px; color: var(--blue-bright); text-shadow: 0 0 20px var(--blue-bright); }
+  .logo-sub { font-size: 7px; letter-spacing: 2px; color: var(--white-dim); }
   .header-center { text-align: center; font-family: 'Rajdhani', sans-serif; }
-  .paddock-id { font-size: 26px; font-weight: 700; color: var(--white); letter-spacing: 6px; }
-  .paddock-name { font-size: 10px; letter-spacing: 4px; color: var(--blue-bright); text-shadow: 0 0 10px var(--blue-bright); }
+  .paddock-id { font-size: 22px; font-weight: 700; color: var(--white); letter-spacing: 6px; }
+  .paddock-name { font-size: 9px; letter-spacing: 4px; color: var(--blue-bright); text-shadow: 0 0 10px var(--blue-bright); }
   .header-right { text-align: right; }
-  #clock { font-size: 20px; color: var(--blue-bright); }
-  #date-display { font-size: 8px; color: var(--white-dim); letter-spacing: 2px; }
-  #status-pill { display: inline-block; margin-top: 3px; padding: 2px 8px; border: 1px solid var(--green-ok); color: var(--green-ok); font-size: 8px; letter-spacing: 2px; text-shadow: 0 0 8px var(--green-ok); }
+  #clock { font-size: 18px; color: var(--blue-bright); }
+  #date-display { font-size: 7px; color: var(--white-dim); letter-spacing: 2px; }
+  #status-pill { display: inline-block; margin-top: 3px; padding: 2px 8px; border: 1px solid var(--green-ok); color: var(--green-ok); font-size: 7px; letter-spacing: 2px; text-shadow: 0 0 8px var(--green-ok); }
 
-  /* ROW 1: Radar left, Readout+Buttons right */
-  #row-top { display: flex; gap: 10px; flex-shrink: 0; }
-  #radar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
-  #scan-container { position: relative; width: 220px; height: 220px; }
-  #radar-canvas { width: 220px; height: 220px; border-radius: 50%; border: 1px solid rgba(0,212,255,0.4); box-shadow: 0 0 20px rgba(0,212,255,0.2), inset 0 0 30px rgba(0,0,0,0.5); }
-  #scan-label { font-size: 8px; letter-spacing: 3px; color: var(--white-dim); text-align: center; }
-  #right-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-  #readout { flex: 1; border: 1px solid rgba(0,212,255,0.3); padding: 10px 12px; position: relative; background: rgba(0,20,35,0.6); display: flex; align-items: flex-start; }
+  /* Radar + Readout side by side */
+  #radar-readout-row {
+    flex: 1; display: flex; gap: 10px; min-height: 0;
+  }
+  #radar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; justify-content: center; }
+  #scan-container { position: relative; }
+  #radar-canvas { width: 180px; height: 180px; border-radius: 50%; border: 1px solid rgba(0,212,255,0.4); box-shadow: 0 0 20px rgba(0,212,255,0.2), inset 0 0 30px rgba(0,0,0,0.5); }
+  #scan-label { font-size: 7px; letter-spacing: 3px; color: var(--white-dim); text-align: center; }
+  #readout {
+    flex: 1; border: 1px solid rgba(0,212,255,0.3); padding: 10px 12px; position: relative;
+    background: rgba(0,20,35,0.6); display: flex; align-items: flex-start; min-height: 0;
+  }
   #readout::before { content: 'SYSTEM READOUT'; position: absolute; top: -7px; left: 10px; font-size: 8px; letter-spacing: 3px; color: var(--blue-mid); background: var(--blue-void); padding: 0 4px; }
-  #readout-text { font-size: 11px; line-height: 1.65; color: var(--white); white-space: pre-wrap; }
+  #readout-text { font-size: 12px; line-height: 1.7; color: var(--white); white-space: pre-wrap; }
   #readout-text.alert { color: var(--red-alert); text-shadow: 0 0 10px var(--red-alert); }
   #readout-text.ok    { color: var(--green-ok);  text-shadow: 0 0 8px var(--green-ok);  }
   #readout-text.amber { color: var(--amber);     text-shadow: 0 0 8px var(--amber);     }
-  #buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+  /* ── THIRD 2: Big Buttons ── */
+  #third-mid {
+    flex: 1 1 33.333%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0,153,204,0.4);
+  }
+  #buttons {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    width: 100%; height: 100%;
+  }
   .btn {
-    font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 13px 6px;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    font-size: 22px; letter-spacing: 2px; padding: 0 10px;
     border: 1px solid var(--blue-mid); background: rgba(0,153,204,0.1); color: var(--blue-bright);
     cursor: pointer; text-transform: uppercase; position: relative; overflow: hidden; transition: all 0.2s;
     -webkit-tap-highlight-color: transparent;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    line-height: 1.2;
   }
+  .btn .btn-icon { display: block; font-size: 28px; margin-bottom: 6px; }
+  .btn-inner { display: flex; flex-direction: column; align-items: center; }
   .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0,212,255,0.15), transparent); transition: left 0.4s; }
   .btn:active::before { left: 100%; }
-  .btn:active { background: rgba(0,212,255,0.2); box-shadow: 0 0 15px rgba(0,212,255,0.3); }
+  .btn:active { background: rgba(0,212,255,0.2); box-shadow: 0 0 20px rgba(0,212,255,0.4); }
   .btn.alert-btn { border-color: var(--red-alert); color: var(--red-alert); background: rgba(255,51,51,0.08); }
-  .btn.alert-btn:active { background: rgba(255,51,51,0.2); box-shadow: 0 0 15px rgba(255,51,51,0.3); }
+  .btn.alert-btn:active { background: rgba(255,51,51,0.2); box-shadow: 0 0 20px rgba(255,51,51,0.4); }
   .btn.disabled { opacity: 0.4; pointer-events: none; }
 
-  /* ROW 2: three data panels */
-  #row-data { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; flex-shrink: 0; }
-  .data-block { border: 1px solid rgba(0,212,255,0.2); padding: 8px; position: relative; }
+  /* corner accent on buttons */
+  .btn::after {
+    content: ''; position: absolute; top: 4px; left: 4px;
+    width: 10px; height: 10px;
+    border-top: 2px solid currentColor; border-left: 2px solid currentColor;
+    opacity: 0.5;
+  }
+
+  /* ── THIRD 3: Data Panels ── */
+  #third-bot {
+    flex: 1 1 33.333%;
+    display: flex; flex-direction: column; gap: 6px;
+    padding-top: 6px; min-height: 0;
+  }
+  #row-data { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; flex-shrink: 0; }
+  .data-block { border: 1px solid rgba(0,212,255,0.2); padding: 6px; position: relative; }
   .data-block::before { content: ''; position: absolute; top: -1px; left: -1px; width: 7px; height: 7px; border-top: 2px solid var(--blue-bright); border-left: 2px solid var(--blue-bright); }
   .data-block::after  { content: ''; position: absolute; bottom: -1px; right: -1px; width: 7px; height: 7px; border-bottom: 2px solid var(--blue-bright); border-right: 2px solid var(--blue-bright); }
-  .block-label { font-size: 8px; letter-spacing: 2px; color: var(--white-dim); margin-bottom: 6px; }
-  .vital-row { display: flex; justify-content: space-between; align-items: center; margin: 3px 0; }
-  .vital-name { font-size: 9px; color: var(--white-dim); }
-  .vital-val  { font-size: 13px; color: var(--blue-bright); text-shadow: 0 0 8px var(--blue-bright); }
-  .bar-wrap { height: 3px; background: rgba(0,212,255,0.15); margin: 2px 0 5px; }
+  .block-label { font-size: 7px; letter-spacing: 2px; color: var(--white-dim); margin-bottom: 4px; }
+  .vital-row { display: flex; justify-content: space-between; align-items: center; margin: 2px 0; }
+  .vital-name { font-size: 8px; color: var(--white-dim); }
+  .vital-val  { font-size: 12px; color: var(--blue-bright); text-shadow: 0 0 8px var(--blue-bright); }
+  .bar-wrap { height: 3px; background: rgba(0,212,255,0.15); margin: 2px 0 4px; }
   .bar-fill { height: 100%; background: var(--blue-bright); box-shadow: 0 0 6px var(--blue-bright); transition: width 1s ease; }
-  .fence-row { margin: 3px 0; }
-  .fence-label { font-size: 8px; color: var(--white-dim); display: flex; justify-content: space-between; }
+  .fence-row { margin: 2px 0; }
+  .fence-label { font-size: 7px; color: var(--white-dim); display: flex; justify-content: space-between; }
   .fence-bar { height: 3px; background: rgba(0,255,136,0.15); margin: 2px 0; }
   .fence-fill { height: 100%; background: var(--green-ok); box-shadow: 0 0 6px var(--green-ok); }
 
-  /* ROW 3: heatmap + log */
-  #row-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; min-height: 0; }
+  /* Heatmap + Log */
+  #row-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; flex: 1; min-height: 0; }
   #heatmap-block, #log-block {
-    border: 1px solid rgba(0,212,255,0.2); padding: 8px; position: relative;
-    display: flex; flex-direction: column; min-height: 0;
+    border: 1px solid rgba(0,212,255,0.2); padding: 6px; position: relative;
+    display: flex; flex-direction: column; min-height: 0; overflow: hidden;
   }
   #heatmap-block::before, #log-block::before { content: ''; position: absolute; top: -1px; left: -1px; width: 7px; height: 7px; border-top: 2px solid var(--blue-bright); border-left: 2px solid var(--blue-bright); }
   #heatmap-block::after,  #log-block::after  { content: ''; position: absolute; bottom: -1px; right: -1px; width: 7px; height: 7px; border-bottom: 2px solid var(--blue-bright); border-right: 2px solid var(--blue-bright); }
   #heatmap-canvas { flex: 1; width: 100%; display: block; border: 1px solid rgba(0,212,255,0.15); }
   #feed-log { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 2px; }
-  .feed-entry { font-size: 9px; color: var(--white-dim); padding: 2px 0; border-bottom: 1px solid rgba(0,212,255,0.08); animation: fadeIn 0.3s ease; }
+  .feed-entry { font-size: 8px; color: var(--white-dim); padding: 2px 0; border-bottom: 1px solid rgba(0,212,255,0.08); animation: fadeIn 0.3s ease; }
   .feed-entry .ts { color: var(--blue-mid); margin-right: 5px; }
   .feed-entry.warn { color: var(--amber); }
   .feed-entry.err  { color: var(--red-alert); }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
 
   /* FOOTER */
-  #footer { border-top: 1px solid rgba(0,153,204,0.3); padding-top: 5px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-  .footer-item { font-size: 8px; letter-spacing: 2px; color: var(--white-dim); }
-  #data-stream { font-size: 8px; color: rgba(0,212,255,0.4); letter-spacing: 1px; overflow: hidden; max-width: 50%; white-space: nowrap; text-overflow: ellipsis; }
+  #footer { border-top: 1px solid rgba(0,153,204,0.3); padding-top: 4px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; margin-top: 4px; }
+  .footer-item { font-size: 7px; letter-spacing: 2px; color: var(--white-dim); }
+  #data-stream { font-size: 7px; color: rgba(0,212,255,0.4); letter-spacing: 1px; overflow: hidden; max-width: 50%; white-space: nowrap; text-overflow: ellipsis; }
 
   /* MODAL */
   #modal { display: none; position: fixed; inset: 0; background: rgba(0,0,20,0.92); z-index: 200; align-items: center; justify-content: center; flex-direction: column; }
@@ -133,78 +174,94 @@
 <body>
 <div id="app">
 
-  <div id="header">
-    <div class="logo-area">
-      <div class="logo-main">JURASSIC WORLD</div>
-      <div class="logo-sub">ASSET CONTAINMENT SYSTEM · v4.2.1</div>
-    </div>
-    <div class="header-center">
-      <div class="paddock-id">PADDOCK 11</div>
-      <div class="paddock-name">INDOMINUS REX</div>
-    </div>
-    <div class="header-right">
-      <div id="clock">--:--:--</div>
-      <div id="date-display">--.--.----</div>
-      <div id="status-pill">● SECURE</div>
-    </div>
-  </div>
-
-  <div id="row-top">
-    <div id="radar-col">
-      <div id="scan-container">
-        <canvas id="radar-canvas" width="240" height="240"></canvas>
+  <!-- ── THIRD 1: Header + Radar + Readout ── -->
+  <div id="third-top">
+    <div id="header">
+      <div class="logo-area">
+        <div class="logo-main">JURASSIC WORLD</div>
+        <div class="logo-sub">ASSET CONTAINMENT SYSTEM · v4.2.1</div>
       </div>
-      <div id="scan-label">THERMAL TRACKING · SECTOR 11</div>
+      <div class="header-center">
+        <div class="paddock-id">PADDOCK 11</div>
+        <div class="paddock-name">INDOMINUS REX</div>
+      </div>
+      <div class="header-right">
+        <div id="clock">--:--:--</div>
+        <div id="date-display">--.--.----</div>
+        <div id="status-pill">● SECURE</div>
+      </div>
     </div>
-    <div id="right-col">
+
+    <div id="radar-readout-row">
+      <div id="radar-col">
+        <div id="scan-container">
+          <canvas id="radar-canvas" width="240" height="240"></canvas>
+        </div>
+        <div id="scan-label">THERMAL TRACKING · SECTOR 11</div>
+      </div>
       <div id="readout">
         <div id="readout-text">SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.</div>
       </div>
-      <div id="buttons">
-        <button class="btn" onclick="runThermalScan()">⬡ THERMAL SCAN</button>
-        <button class="btn" onclick="runAssetStatus()">◈ ASSET STATUS</button>
-        <button class="btn alert-btn" onclick="runAlertSequence()">⚠ BREACH ALERT</button>
-        <button class="btn" onclick="runSystemCheck()">◉ SYSTEM CHECK</button>
+    </div>
+  </div>
+
+  <!-- ── THIRD 2: Big Buttons ── -->
+  <div id="third-mid">
+    <div id="buttons">
+      <button class="btn" onclick="runThermalScan()">
+        <div class="btn-inner"><span class="btn-icon">⬡</span>THERMAL SCAN</div>
+      </button>
+      <button class="btn" onclick="runAssetStatus()">
+        <div class="btn-inner"><span class="btn-icon">◈</span>ASSET STATUS</div>
+      </button>
+      <button class="btn alert-btn" onclick="runAlertSequence()">
+        <div class="btn-inner"><span class="btn-icon">⚠</span>BREACH ALERT</div>
+      </button>
+      <button class="btn" onclick="runSystemCheck()">
+        <div class="btn-inner"><span class="btn-icon">◉</span>SYSTEM CHECK</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── THIRD 3: Data Panels ── -->
+  <div id="third-bot">
+    <div id="row-data">
+      <div class="data-block">
+        <div class="block-label">ASSET BIOMETRICS</div>
+        <div class="vital-row"><span class="vital-name">CORE TEMP</span><span class="vital-val" id="bio-temp">38.4°C</span></div>
+        <div class="bar-wrap"><div class="bar-fill" id="bar-temp" style="width:72%"></div></div>
+        <div class="vital-row"><span class="vital-name">HEART RATE</span><span class="vital-val" id="bio-hr">62 BPM</span></div>
+        <div class="bar-wrap"><div class="bar-fill" id="bar-hr" style="width:55%"></div></div>
+        <div class="vital-row"><span class="vital-name">MOTION INDEX</span><span class="vital-val" id="bio-motion">0.3 m/s</span></div>
+        <div class="bar-wrap"><div class="bar-fill" id="bar-motion" style="width:20%"></div></div>
+      </div>
+      <div class="data-block">
+        <div class="block-label">CONTAINMENT INTEGRITY</div>
+        <div class="fence-row"><div class="fence-label"><span>PERIMETER A</span><span id="fence-a">100%</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
+        <div class="fence-row"><div class="fence-label"><span>PERIMETER B</span><span id="fence-b">100%</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
+        <div class="fence-row"><div class="fence-label"><span>INNER GATE</span><span>LOCKED</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
+        <div class="fence-row"><div class="fence-label"><span>VOLTAGE</span><span id="voltage">10,000V</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
+      </div>
+      <div class="data-block">
+        <div class="block-label">GPS TRANSPONDER</div>
+        <div class="vital-row"><span class="vital-name">LAT</span><span class="vital-val" id="gps-lat">21.5082°N</span></div>
+        <div class="vital-row"><span class="vital-name">LON</span><span class="vital-val" id="gps-lon">157.8375°W</span></div>
+        <div class="vital-row"><span class="vital-name">SIGNAL</span><span class="vital-val" style="color:var(--green-ok);text-shadow:0 0 8px var(--green-ok)" id="gps-signal">STRONG</span></div>
+        <div style="margin-top:6px"><div class="block-label" style="margin-bottom:2px">ENCLOSURE</div>
+        <div class="vital-row"><span class="vital-name">CAMERAS</span><span class="vital-val" style="font-size:10px" id="cam-count">32 / 32</span></div>
+        <div class="vital-row"><span class="vital-name">UPTIME</span><span class="vital-val" style="font-size:10px" id="uptime">847:12:09</span></div></div>
       </div>
     </div>
-  </div>
 
-  <div id="row-data">
-    <div class="data-block">
-      <div class="block-label">ASSET BIOMETRICS</div>
-      <div class="vital-row"><span class="vital-name">CORE TEMP</span><span class="vital-val" id="bio-temp">38.4°C</span></div>
-      <div class="bar-wrap"><div class="bar-fill" id="bar-temp" style="width:72%"></div></div>
-      <div class="vital-row"><span class="vital-name">HEART RATE</span><span class="vital-val" id="bio-hr">62 BPM</span></div>
-      <div class="bar-wrap"><div class="bar-fill" id="bar-hr" style="width:55%"></div></div>
-      <div class="vital-row"><span class="vital-name">MOTION INDEX</span><span class="vital-val" id="bio-motion">0.3 m/s</span></div>
-      <div class="bar-wrap"><div class="bar-fill" id="bar-motion" style="width:20%"></div></div>
-    </div>
-    <div class="data-block">
-      <div class="block-label">CONTAINMENT INTEGRITY</div>
-      <div class="fence-row"><div class="fence-label"><span>PERIMETER A</span><span id="fence-a">100%</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
-      <div class="fence-row"><div class="fence-label"><span>PERIMETER B</span><span id="fence-b">100%</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
-      <div class="fence-row"><div class="fence-label"><span>INNER GATE</span><span>LOCKED</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
-      <div class="fence-row"><div class="fence-label"><span>VOLTAGE</span><span id="voltage">10,000V</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
-    </div>
-    <div class="data-block">
-      <div class="block-label">GPS TRANSPONDER</div>
-      <div class="vital-row"><span class="vital-name">LAT</span><span class="vital-val" id="gps-lat">21.5082°N</span></div>
-      <div class="vital-row"><span class="vital-name">LON</span><span class="vital-val" id="gps-lon">157.8375°W</span></div>
-      <div class="vital-row"><span class="vital-name">SIGNAL</span><span class="vital-val" style="color:var(--green-ok);text-shadow:0 0 8px var(--green-ok)" id="gps-signal">STRONG</span></div>
-      <div style="margin-top:8px"><div class="block-label" style="margin-bottom:2px">ENCLOSURE</div>
-      <div class="vital-row"><span class="vital-name">CAMERAS</span><span class="vital-val" style="font-size:11px" id="cam-count">32 / 32</span></div>
-      <div class="vital-row"><span class="vital-name">UPTIME</span><span class="vital-val" style="font-size:11px" id="uptime">847:12:09</span></div></div>
-    </div>
-  </div>
-
-  <div id="row-bottom">
-    <div id="heatmap-block">
-      <div class="block-label">HEAT SIGNATURE MAP</div>
-      <canvas id="heatmap-canvas" width="400" height="200"></canvas>
-    </div>
-    <div id="log-block">
-      <div class="block-label">ACTIVITY LOG</div>
-      <div id="feed-log"></div>
+    <div id="row-bottom">
+      <div id="heatmap-block">
+        <div class="block-label">HEAT SIGNATURE MAP</div>
+        <canvas id="heatmap-canvas" width="400" height="200"></canvas>
+      </div>
+      <div id="log-block">
+        <div class="block-label">ACTIVITY LOG</div>
+        <div id="feed-log"></div>
+      </div>
     </div>
   </div>
 
@@ -318,7 +375,7 @@ function drawRadar() {
 }
 drawRadar();
 
-// HEATMAP - draws to canvas actual pixel size
+// HEATMAP
 const hmCanvas=document.getElementById('heatmap-canvas');
 const hCtx=hmCanvas.getContext('2d');
 let heatBlobs=[{x:200,y:100,r:42,vx:0.5,vy:0.2}];
