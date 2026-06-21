@@ -422,18 +422,6 @@
     text-transform: uppercase;
     -webkit-tap-highlight-color: transparent;
   }
-
-  /* ── EASTER EGG MODAL VARIANT ── */
-  #modal.egg #modal-box { border-color: var(--amber); box-shadow: 0 0 40px rgba(255,170,0,0.3); }
-  #modal.egg #modal-title { color: var(--amber); text-shadow: 0 0 20px var(--amber); }
-  #modal.egg #modal-close { border-color: var(--amber); color: var(--amber); }
-
-  /* tap zone — invisible but tappable */
-  .tap-zone {
-    position: absolute;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
 </style>
 </head>
 <body>
@@ -442,11 +430,11 @@
   <!-- HEADER -->
   <div id="header">
     <div class="logo-area">
-      <div class="logo-main" id="tap-logo" style="position:relative;cursor:pointer;">JURASSIC WORLD</div>
+      <div class="logo-main">JURASSIC WORLD</div>
       <div class="logo-sub">ASSET CONTAINMENT SYSTEM · v4.2.1</div>
     </div>
     <div class="header-center">
-      <div class="paddock-id" id="tap-paddock" style="cursor:pointer;">PADDOCK 11</div>
+      <div class="paddock-id">PADDOCK 11</div>
       <div class="paddock-name">INDOMINUS REX</div>
     </div>
     <div class="header-right">
@@ -522,7 +510,6 @@
     <div style="position:relative;margin-top:8px">
       <div id="scan-container">
         <canvas id="radar-canvas" width="240" height="240"></canvas>
-        <div id="tap-radar" class="tap-zone" style="inset:0;border-radius:50%;"></div>
       </div>
       <div id="scan-label">THERMAL TRACKING · SECTOR 11</div>
     </div>
@@ -943,7 +930,6 @@ function runAlertSequence() {
   addFeedEntry('BREACH ALERT TRIGGERED', 'err');
   playTone(330, 1.2, 'sawtooth');
 
-  document.getElementById('modal').classList.remove('egg');
   document.getElementById('modal-title').textContent = '⚠ CONTAINMENT BREACH';
   document.getElementById('modal-body').innerHTML =
     'PADDOCK 11 — INDOMINUS REX<br><br>' +
@@ -954,6 +940,13 @@ function runAlertSequence() {
     'ALL PERSONNEL: EVACUATE SECTOR 11.';
   document.getElementById('modal').classList.add('show');
   setReadout(['⚠ CONTAINMENT BREACH DETECTED'], 'alert');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  addFeedEntry('Alert acknowledged', 'warn');
+  setReadout(['SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.']);
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('disabled'));
 }
 
 // ─── SYSTEM CHECK ─────────────────────────────────────────
@@ -1002,213 +995,6 @@ function playTone(freq, duration, type='sine') {
     osc.stop(ctx.currentTime + duration);
   } catch(e) {}
 }
-
-// ─── EASTER EGGS ──────────────────────────────────────────
-
-// Classified modal helper (amber variant)
-function showEggModal(title, bodyHTML) {
-  const modal = document.getElementById('modal');
-  modal.classList.add('show', 'egg');
-  document.getElementById('modal-title').textContent = title;
-  document.getElementById('modal-body').innerHTML = bodyHTML;
-  playTone(528, 0.4, 'sine');
-}
-function closeModal() {
-  const modal = document.getElementById('modal');
-  modal.classList.remove('show', 'egg');
-  addFeedEntry('Alert acknowledged', 'warn');
-  setReadout(['SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.']);
-  document.querySelectorAll('.btn').forEach(b => b.classList.remove('disabled'));
-}
-
-// Rotating pool of Easter egg reveals
-const eggReveals = [
-  {
-    title: '// CLASSIFIED FILE 7741-KR //',
-    body: `<span style="font-size:10px;line-height:1.9">
-      ACTUAL LOCATION: KAʻAʻAWA VALLEY, OʻAHU, HAWAIʻI<br>
-      PROPERTY: KUALOA RANCH — EST. 1850<br>
-      SIZE: 4,000 ACRES · KOʻOLAU MTN RANGE<br><br>
-      THIS PADDOCK SET WAS CONSTRUCTED ON-SITE<br>
-      AND LEFT STANDING AFTER PRODUCTION ENDED.<br>
-      THE CLAW MARKS ON THE WALLS ARE REAL —<br>
-      CARVED FROM STYROFOAM DURING FILMING.<br><br>
-      <span style="color:var(--amber)">YOU ARE STANDING WHERE THE MOVIE WAS MADE.</span>
-    </span>`
-  },
-  {
-    title: '// LOCATION INTEL //',
-    body: `<span style="font-size:10px;line-height:1.9">
-      KUALOA RANCH — HOLLYWOOD'S HAWAIʻI BACKLOT<br><br>
-      FILMS SHOT ON THIS PROPERTY:<br>
-      · JURASSIC PARK (1993)<br>
-      · JURASSIC WORLD (2015)<br>
-      · KONG: SKULL ISLAND (2017)<br>
-      · JUMANJI: WELCOME TO THE JUNGLE (2017)<br>
-      · GODZILLA (2014)<br>
-      · PEARL HARBOR (2001)<br>
-      · LOST (TV · 2004–2010)<br><br>
-      <span style="color:var(--amber)">250+ PRODUCTIONS. ONE VALLEY.</span>
-    </span>`
-  },
-  {
-    title: '// ORIGIN REPORT //',
-    body: `<span style="font-size:10px;line-height:1.9">
-      THE GALLIMIMUS STAMPEDE SCENE FROM THE<br>
-      ORIGINAL JURASSIC PARK (1993) WAS FILMED<br>
-      HERE IN KAʻAʻAWA VALLEY — SPIELBERG MOVED<br>
-      PRODUCTION FROM KAUAʻI AFTER HURRICANE<br>
-      INIKI STRUCK IN SEPT 1992.<br><br>
-      THAT ONE SCENE PUT KUALOA ON THE MAP.<br><br>
-      THE LOG WHERE DR. GRANT AND THE KIDS<br>
-      TOOK COVER? A REPLICA. THE ORIGINAL<br>
-      WAS NEVER PRESERVED — NO ONE EXPECTED<br>
-      JURASSIC PARK TO BECOME ONE OF THE<br>
-      HIGHEST-GROSSING FILMS OF ALL TIME.<br><br>
-      <span style="color:var(--amber)">NOW YOU KNOW.</span>
-    </span>`
-  },
-  {
-    title: '// CULTURAL RECORD //',
-    body: `<span style="font-size:10px;line-height:1.9">
-      THIS LAND WAS SACRED TO ANCIENT HAWAIIANS<br>
-      FROM THE 13TH TO 18TH CENTURY.<br><br>
-      CHIEFS TRAINED HERE. IT WAS A PLACE OF<br>
-      REFUGE — SO HOLY THAT COMMONERS BOWED<br>
-      WHEN PASSING BY CANOE.<br><br>
-      CHIEF LAʻA-MAI-KAHIKI SETTLED IN THIS<br>
-      VALLEY AFTER VOYAGING FROM TAHITIi.<br><br>
-      IN 1850, KING KAMEHAMEHA III SOLD THIS<br>
-      LAND TO DR. GERRIT P. JUDD. IT HAS STAYED<br>
-      IN THE SAME FAMILY EVER SINCE.<br><br>
-      <span style="color:var(--amber)">4,000 ACRES. 800 YEARS OF HISTORY.</span>
-    </span>`
-  },
-  {
-    title: '// INTEL: MOLIHI FISHPOND //',
-    body: `<span style="font-size:10px;line-height:1.9">
-      ON THE SOUTH END OF THE PROPERTY:<br>
-      MOLIʻI FISHPOND — OVER 800 YEARS OLD.<br><br>
-      BUILT BY ANCIENT HAWAIIANS TO SUSTAINABLY<br>
-      FARM FISH IN KĀNEOHE BAY. STILL FUNCTIONAL.<br><br>
-      THE ISLAND YOU CAN SEE FROM THE OVERLOOK<br>
-      IS MOKOLIʻI — KNOWN AS "CHINAMAN'S HAT."<br><br>
-      KUALOA ALSO OPERATES AS A WORKING<br>
-      CATTLE RANCH AND SUSTAINABLE FARM TODAY.<br><br>
-      <span style="color:var(--amber)">WHAT YOU SEE IS ONLY PART OF THE STORY.</span>
-    </span>`
-  }
-];
-
-let eggIndex = 0;
-
-// TAP ZONE: RADAR — tap to reveal rotating Easter eggs
-document.getElementById('tap-radar').addEventListener('click', () => {
-  if (document.querySelector('.btn.disabled')) return;
-  const egg = eggReveals[eggIndex % eggReveals.length];
-  eggIndex++;
-  showEggModal(egg.title, egg.body);
-  addFeedEntry('[CLASSIFIED] File accessed', 'warn');
-});
-
-// TAP ZONE: LOGO — Kualoa founding fact
-let logoTaps = 0;
-document.getElementById('tap-logo').addEventListener('click', () => {
-  logoTaps++;
-  if (logoTaps % 2 === 0) {
-    showEggModal('// BEHIND THE FICTION //', `
-      <span style="font-size:10px;line-height:1.9">
-        "JURASSIC WORLD" IS FICTION.<br>
-        KUALOA RANCH IS REAL.<br><br>
-        THE INDOMINUS REX PADDOCK YOU ARE<br>
-        STANDING IN FRONT OF WAS BUILT BY<br>
-        A FILM CREW IN 2014 FOR JURASSIC WORLD.<br><br>
-        IT WAS NEVER TORN DOWN.<br><br>
-        KUALOA KEPT IT — AND NOW IT'S ONE<br>
-        OF THE MOST VISITED SPOTS ON OʻAHU.<br><br>
-        <span style="color:var(--amber)">THE SET BECAME THE ATTRACTION.</span>
-      </span>
-    `);
-    addFeedEntry('[CLASSIFIED] Origin file accessed', 'warn');
-  } else {
-    addFeedEntry('INGEN BIOSYS · TERMINAL ACTIVE', '');
-  }
-});
-
-// TAP ZONE: PADDOCK ID — Battle damage lore
-document.getElementById('tap-paddock').addEventListener('click', () => {
-  showEggModal('// PADDOCK 11 — DAMAGE REPORT //', `
-    <span style="font-size:10px;line-height:1.9">
-      WALL CLAW MARKS: CONFIRMED ON-SITE<br>
-      MATERIAL: HIGH-DENSITY STYROFOAM<br>
-      CARVED DURING PRODUCTION: 2014<br><br>
-      THE I. REX USED THERMAL CAMOUFLAGE<br>
-      AND SUPPRESSED HER OWN HEAT SIGNATURE<br>
-      TO FOOL THIS EXACT SCANNING SYSTEM.<br><br>
-      SHE ALSO LEARNED THE CAMERAS' BLIND SPOTS<br>
-      BY WATCHING THE HANDLERS. EVERY DAY.<br><br>
-      <span style="color:var(--amber)">SHE WASN'T JUST WATCHING THE PADDOCK.<br>SHE WAS STUDYING IT.</span>
-    </span>
-  `);
-  addFeedEntry('[CLASSIFIED] Damage log retrieved', 'warn');
-});
-
-// SECRET COMBO: tap all 4 buttons in order (Thermal → Status → Alert → Check)
-// within 8 seconds to unlock ULTRA CLASSIFIED
-let comboSequence = [];
-let comboTimer = null;
-const COMBO = ['thermal','status','alert','check'];
-
-function trackCombo(id) {
-  comboSequence.push(id);
-  clearTimeout(comboTimer);
-  comboTimer = setTimeout(() => { comboSequence = []; }, 8000);
-
-  if (comboSequence.length === 4) {
-    const match = comboSequence.every((v, i) => v === COMBO[i]);
-    comboSequence = [];
-    if (match) triggerUltraEgg();
-  }
-}
-
-function triggerUltraEgg() {
-  playTone(174, 0.2, 'sine');
-  setTimeout(() => playTone(220, 0.2, 'sine'), 200);
-  setTimeout(() => playTone(261, 0.2, 'sine'), 400);
-  setTimeout(() => playTone(349, 0.6, 'sine'), 600);
-
-  addFeedEntry('[ULTRA CLASSIFIED] Combo unlocked', 'err');
-  setTimeout(() => {
-    showEggModal('// EYES ONLY — LEVEL 5 CLEARANCE //', `
-      <span style="font-size:10px;line-height:1.9">
-        YOU FOUND IT.<br><br>
-        KAʻAʻAWA VALLEY HAS APPEARED IN MORE<br>
-        THAN 250 FILMS AND TV PRODUCTIONS<br>
-        SINCE THE 1950s.<br><br>
-        THE VALLEY LOOKS ALMOST IDENTICAL<br>
-        TO HOW IT DID IN 1993 WHEN JURASSIC<br>
-        PARK WAS FILMED HERE.<br><br>
-        THE KOʻOLAU MOUNTAINS BEHIND YOU<br>
-        ARE THE SAME RIDGELINE YOU SAW IN<br>
-        THE ORIGINAL FILM.<br><br>
-        NO CGI. NO BACKDROP.<br>
-        JUST THIS VALLEY.<br><br>
-        <span style="color:var(--amber)">SHARE THIS WITH NO ONE.<br>
-        OR SHARE IT WITH EVERYONE.<br>
-        YOUR CALL.</span>
-      </span>
-    `);
-  }, 800);
-}
-
-// Hook combo tracking into existing button functions (wrap originals)
-const _origThermal = runThermalScan;
-runThermalScan = function() { trackCombo('thermal'); _origThermal(); };
-const _origStatus = runAssetStatus;
-runAssetStatus = function() { trackCombo('status'); _origStatus(); };
-const _origAlert = runAlertSequence;
-runAlertSequence = function() { trackCombo('alert'); _origAlert(); };
-const _origCheck = runSystemCheck;
-runSystemCheck = function() { trackCombo('check'); _origCheck(); };
+</script>
 </body>
 </html>
