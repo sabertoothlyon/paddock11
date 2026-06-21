@@ -2,432 +2,137 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>PADDOCK 11 — INDOMINUS REX</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap');
-
   :root {
-    --blue-bright: #00d4ff;
-    --blue-mid: #0099cc;
-    --blue-dark: #003a52;
-    --blue-void: #000d14;
-    --white: #e8f6ff;
-    --white-dim: #7ab8cc;
-    --red-alert: #ff3333;
-    --amber: #ffaa00;
-    --green-ok: #00ff88;
+    --blue-bright: #00d4ff; --blue-mid: #0099cc; --blue-dark: #003a52;
+    --blue-void: #000d14; --white: #e8f6ff; --white-dim: #7ab8cc;
+    --red-alert: #ff3333; --amber: #ffaa00; --green-ok: #00ff88;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
-    background: var(--blue-void);
-    color: var(--white);
+    background: var(--blue-void); color: var(--white);
     font-family: 'Share Tech Mono', monospace;
-    height: 100vh;
-    overflow: hidden;
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
+    height: 100dvh; overflow: hidden;
+    touch-action: manipulation; user-select: none; -webkit-user-select: none;
   }
-
-  /* ── SCANLINE OVERLAY ── */
   body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,212,255,0.03) 2px,
-      rgba(0,212,255,0.03) 4px
-    );
-    pointer-events: none;
-    z-index: 100;
+    content: ''; position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.03) 2px, rgba(0,212,255,0.03) 4px);
+    pointer-events: none; z-index: 100;
   }
-
-  /* ── VIGNETTE ── */
   body::after {
-    content: '';
-    position: fixed; inset: 0;
+    content: ''; position: fixed; inset: 0;
     background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
-    pointer-events: none;
-    z-index: 99;
+    pointer-events: none; z-index: 99;
   }
 
-  /* ── LAYOUT ── */
+  /* APP: vertical flex for portrait */
   #app {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    grid-template-columns: 5fr 6fr 5fr;
-    height: 100vh;
-    gap: 0;
-    padding: 12px;
-    position: relative;
-  }
-
-  /* ── HEADER ── */
-  #header {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--blue-mid);
-    padding-bottom: 5px;
-    margin-bottom: 5px;
-  }
-
-  .logo-area { display: flex; flex-direction: column; }
-  .logo-main {
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    font-size: clamp(14px, 2.2vw, 20px);
-    letter-spacing: 3px;
-    color: var(--blue-bright);
-    text-shadow: 0 0 20px var(--blue-bright);
-  }
-  .logo-sub {
-    font-size: clamp(7px, 0.9vw, 9px);
-    letter-spacing: 2px;
-    color: var(--white-dim);
-  }
-
-  .header-center {
-    text-align: center;
-    font-family: 'Rajdhani', sans-serif;
-  }
-  .paddock-id {
-    font-size: clamp(18px, 2.8vw, 26px);
-    font-weight: 700;
-    color: var(--white);
-    letter-spacing: 4px;
-  }
-  .paddock-name {
-    font-size: clamp(9px, 1.1vw, 11px);
-    letter-spacing: 3px;
-    color: var(--blue-bright);
-    text-shadow: 0 0 10px var(--blue-bright);
-  }
-
-  .header-right { text-align: right; }
-  #clock { font-size: clamp(16px, 2.2vw, 20px); color: var(--blue-bright); }
-  #date-display { font-size: clamp(7px, 0.9vw, 9px); color: var(--white-dim); letter-spacing: 2px; }
-  #status-pill {
-    display: inline-block;
-    margin-top: 4px;
-    padding: 2px 10px;
-    border: 1px solid var(--green-ok);
-    color: var(--green-ok);
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-shadow: 0 0 8px var(--green-ok);
-  }
-
-  /* ── LEFT PANEL ── */
-  #panel-left {
-    grid-column: 1;
-    grid-row: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-right: 10px;
-    border-right: 1px solid rgba(0,153,204,0.3);
-  }
-
-  .data-block {
-    border: 1px solid rgba(0,212,255,0.2);
-    padding: 6px;
-    position: relative;
-  }
-  .data-block::before {
-    content: '';
-    position: absolute;
-    top: -1px; left: -1px;
-    width: 8px; height: 8px;
-    border-top: 2px solid var(--blue-bright);
-    border-left: 2px solid var(--blue-bright);
-  }
-  .data-block::after {
-    content: '';
-    position: absolute;
-    bottom: -1px; right: -1px;
-    width: 8px; height: 8px;
-    border-bottom: 2px solid var(--blue-bright);
-    border-right: 2px solid var(--blue-bright);
-  }
-
-  .block-label {
-    font-size: clamp(7px, 0.85vw, 8px);
-    letter-spacing: 2px;
-    color: var(--white-dim);
-    margin-bottom: 4px;
-  }
-
-  .vital-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 2px 0;
-  }
-  .vital-name { font-size: clamp(8px, 0.95vw, 9px); color: var(--white-dim); }
-  .vital-val {
-    font-size: clamp(11px, 1.4vw, 13px);
-    color: var(--blue-bright);
-    text-shadow: 0 0 8px var(--blue-bright);
-  }
-
-  .bar-wrap {
-    height: 3px;
-    background: rgba(0,212,255,0.15);
-    margin: 2px 0 4px;
-  }
-  .bar-fill {
-    height: 100%;
-    background: var(--blue-bright);
-    box-shadow: 0 0 6px var(--blue-bright);
-    transition: width 1s ease;
-  }
-
-  /* containment bars */
-  .fence-row { margin: 2px 0; }
-  .fence-label { font-size: clamp(7px, 0.85vw, 8px); color: var(--white-dim); display: flex; justify-content: space-between; }
-  .fence-bar { height: 4px; background: rgba(0,255,136,0.15); margin: 2px 0; }
-  .fence-fill { height: 100%; background: var(--green-ok); box-shadow: 0 0 6px var(--green-ok); }
-
-  /* rolling numbers */
-  .rolling-number { font-size: 18px; color: var(--blue-bright); text-shadow: 0 0 10px var(--blue-bright); }
-
-  /* ── CENTER PANEL ── */
-  #panel-center {
-    grid-column: 2;
-    grid-row: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex; flex-direction: column; height: 100dvh;
+    padding: 10px;
+    padding-top: max(10px, env(safe-area-inset-top));
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
     gap: 8px;
-    padding: 0 8px;
   }
 
-  /* RADAR / SCAN DISPLAY */
-  #scan-container {
-    position: relative;
-    width: min(210px, 88%);
-    aspect-ratio: 1;
-    flex-shrink: 0;
+  /* HEADER */
+  #header {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--blue-mid); padding-bottom: 6px; flex-shrink: 0;
   }
+  .logo-area { display: flex; flex-direction: column; }
+  .logo-main { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 4px; color: var(--blue-bright); text-shadow: 0 0 20px var(--blue-bright); }
+  .logo-sub { font-size: 8px; letter-spacing: 2px; color: var(--white-dim); }
+  .header-center { text-align: center; font-family: 'Rajdhani', sans-serif; }
+  .paddock-id { font-size: 26px; font-weight: 700; color: var(--white); letter-spacing: 6px; }
+  .paddock-name { font-size: 10px; letter-spacing: 4px; color: var(--blue-bright); text-shadow: 0 0 10px var(--blue-bright); }
+  .header-right { text-align: right; }
+  #clock { font-size: 20px; color: var(--blue-bright); }
+  #date-display { font-size: 8px; color: var(--white-dim); letter-spacing: 2px; }
+  #status-pill { display: inline-block; margin-top: 3px; padding: 2px 8px; border: 1px solid var(--green-ok); color: var(--green-ok); font-size: 8px; letter-spacing: 2px; text-shadow: 0 0 8px var(--green-ok); }
 
-  #radar-canvas {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 1px solid rgba(0,212,255,0.4);
-    box-shadow: 0 0 20px rgba(0,212,255,0.2), inset 0 0 30px rgba(0,0,0,0.5);
-  }
-
-  #scan-label {
-    position: absolute;
-    bottom: -16px;
-    width: 100%;
-    text-align: center;
-    font-size: clamp(7px, 0.85vw, 8px);
-    letter-spacing: 2px;
-    color: var(--white-dim);
-  }
-
-  /* READOUT BOX */
-  #readout {
-    width: 100%;
-    border: 1px solid rgba(0,212,255,0.3);
-    padding: 7px 10px;
-    min-height: 52px;
-    position: relative;
-    background: rgba(0,20,35,0.6);
-  }
-  #readout::before {
-    content: 'SYSTEM READOUT';
-    position: absolute;
-    top: -8px; left: 10px;
-    font-size: 8px;
-    letter-spacing: 3px;
-    color: var(--blue-mid);
-    background: var(--blue-void);
-    padding: 0 4px;
-  }
-  #readout-text {
-    font-size: clamp(10px, 1.2vw, 12px);
-    line-height: 1.55;
-    color: var(--white);
-    min-height: 32px;
-  }
+  /* ROW 1: Radar left, Readout+Buttons right */
+  #row-top { display: flex; gap: 10px; flex-shrink: 0; }
+  #radar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+  #scan-container { position: relative; width: 220px; height: 220px; }
+  #radar-canvas { width: 220px; height: 220px; border-radius: 50%; border: 1px solid rgba(0,212,255,0.4); box-shadow: 0 0 20px rgba(0,212,255,0.2), inset 0 0 30px rgba(0,0,0,0.5); }
+  #scan-label { font-size: 8px; letter-spacing: 3px; color: var(--white-dim); text-align: center; }
+  #right-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  #readout { flex: 1; border: 1px solid rgba(0,212,255,0.3); padding: 10px 12px; position: relative; background: rgba(0,20,35,0.6); display: flex; align-items: flex-start; }
+  #readout::before { content: 'SYSTEM READOUT'; position: absolute; top: -7px; left: 10px; font-size: 8px; letter-spacing: 3px; color: var(--blue-mid); background: var(--blue-void); padding: 0 4px; }
+  #readout-text { font-size: 11px; line-height: 1.65; color: var(--white); white-space: pre-wrap; }
   #readout-text.alert { color: var(--red-alert); text-shadow: 0 0 10px var(--red-alert); }
-  #readout-text.ok { color: var(--green-ok); text-shadow: 0 0 8px var(--green-ok); }
-  #readout-text.amber { color: var(--amber); text-shadow: 0 0 8px var(--amber); }
-
-  /* BUTTONS */
-  #buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
-    width: 100%;
-  }
-
+  #readout-text.ok    { color: var(--green-ok);  text-shadow: 0 0 8px var(--green-ok);  }
+  #readout-text.amber { color: var(--amber);     text-shadow: 0 0 8px var(--amber);     }
+  #buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .btn {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: clamp(9px, 1vw, 10px);
-    letter-spacing: 1px;
-    padding: 10px 6px;
-    border: 1px solid var(--blue-mid);
-    background: rgba(0,153,204,0.1);
-    color: var(--blue-bright);
-    cursor: pointer;
-    text-transform: uppercase;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.2s;
+    font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 13px 6px;
+    border: 1px solid var(--blue-mid); background: rgba(0,153,204,0.1); color: var(--blue-bright);
+    cursor: pointer; text-transform: uppercase; position: relative; overflow: hidden; transition: all 0.2s;
     -webkit-tap-highlight-color: transparent;
   }
-  .btn::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.15), transparent);
-    transition: left 0.4s;
-  }
+  .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0,212,255,0.15), transparent); transition: left 0.4s; }
   .btn:active::before { left: 100%; }
-  .btn:active {
-    background: rgba(0,212,255,0.2);
-    box-shadow: 0 0 15px rgba(0,212,255,0.3);
-  }
-  .btn.alert-btn {
-    border-color: var(--red-alert);
-    color: var(--red-alert);
-    background: rgba(255,51,51,0.08);
-  }
+  .btn:active { background: rgba(0,212,255,0.2); box-shadow: 0 0 15px rgba(0,212,255,0.3); }
+  .btn.alert-btn { border-color: var(--red-alert); color: var(--red-alert); background: rgba(255,51,51,0.08); }
   .btn.alert-btn:active { background: rgba(255,51,51,0.2); box-shadow: 0 0 15px rgba(255,51,51,0.3); }
   .btn.disabled { opacity: 0.4; pointer-events: none; }
 
-  /* ── RIGHT PANEL ── */
-  #panel-right {
-    grid-column: 3;
-    grid-row: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-left: 10px;
-    border-left: 1px solid rgba(0,153,204,0.3);
-  }
+  /* ROW 2: three data panels */
+  #row-data { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; flex-shrink: 0; }
+  .data-block { border: 1px solid rgba(0,212,255,0.2); padding: 8px; position: relative; }
+  .data-block::before { content: ''; position: absolute; top: -1px; left: -1px; width: 7px; height: 7px; border-top: 2px solid var(--blue-bright); border-left: 2px solid var(--blue-bright); }
+  .data-block::after  { content: ''; position: absolute; bottom: -1px; right: -1px; width: 7px; height: 7px; border-bottom: 2px solid var(--blue-bright); border-right: 2px solid var(--blue-bright); }
+  .block-label { font-size: 8px; letter-spacing: 2px; color: var(--white-dim); margin-bottom: 6px; }
+  .vital-row { display: flex; justify-content: space-between; align-items: center; margin: 3px 0; }
+  .vital-name { font-size: 9px; color: var(--white-dim); }
+  .vital-val  { font-size: 13px; color: var(--blue-bright); text-shadow: 0 0 8px var(--blue-bright); }
+  .bar-wrap { height: 3px; background: rgba(0,212,255,0.15); margin: 2px 0 5px; }
+  .bar-fill { height: 100%; background: var(--blue-bright); box-shadow: 0 0 6px var(--blue-bright); transition: width 1s ease; }
+  .fence-row { margin: 3px 0; }
+  .fence-label { font-size: 8px; color: var(--white-dim); display: flex; justify-content: space-between; }
+  .fence-bar { height: 3px; background: rgba(0,255,136,0.15); margin: 2px 0; }
+  .fence-fill { height: 100%; background: var(--green-ok); box-shadow: 0 0 6px var(--green-ok); }
 
-  /* TICKER */
-  .ticker-wrap {
-    overflow: hidden;
-    height: 12px;
-    position: relative;
+  /* ROW 3: heatmap + log */
+  #row-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; min-height: 0; }
+  #heatmap-block, #log-block {
+    border: 1px solid rgba(0,212,255,0.2); padding: 8px; position: relative;
+    display: flex; flex-direction: column; min-height: 0;
   }
-  .ticker-text {
-    font-size: 9px;
-    color: var(--white-dim);
-    white-space: nowrap;
-    animation: ticker 18s linear infinite;
-    letter-spacing: 1px;
-  }
-  @keyframes ticker {
-    from { transform: translateX(300px); }
-    to { transform: translateX(-100%); }
-  }
-
-  /* FEED LOG */
-  #feed-log {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-  .feed-entry {
-    font-size: clamp(8px, 0.95vw, 9px);
-    color: var(--white-dim);
-    padding: 1px 0;
-    border-bottom: 1px solid rgba(0,212,255,0.08);
-    animation: fadeIn 0.3s ease;
-  }
-  .feed-entry .ts { color: var(--blue-mid); margin-right: 6px; }
+  #heatmap-block::before, #log-block::before { content: ''; position: absolute; top: -1px; left: -1px; width: 7px; height: 7px; border-top: 2px solid var(--blue-bright); border-left: 2px solid var(--blue-bright); }
+  #heatmap-block::after,  #log-block::after  { content: ''; position: absolute; bottom: -1px; right: -1px; width: 7px; height: 7px; border-bottom: 2px solid var(--blue-bright); border-right: 2px solid var(--blue-bright); }
+  #heatmap-canvas { flex: 1; width: 100%; display: block; border: 1px solid rgba(0,212,255,0.15); }
+  #feed-log { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 2px; }
+  .feed-entry { font-size: 9px; color: var(--white-dim); padding: 2px 0; border-bottom: 1px solid rgba(0,212,255,0.08); animation: fadeIn 0.3s ease; }
+  .feed-entry .ts { color: var(--blue-mid); margin-right: 5px; }
   .feed-entry.warn { color: var(--amber); }
-  .feed-entry.err { color: var(--red-alert); }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  .feed-entry.err  { color: var(--red-alert); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
 
-  /* HEAT MAP */
-  #heatmap-canvas { width: 100%; height: 76px; border: 1px solid rgba(0,212,255,0.2); }
+  /* FOOTER */
+  #footer { border-top: 1px solid rgba(0,153,204,0.3); padding-top: 5px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .footer-item { font-size: 8px; letter-spacing: 2px; color: var(--white-dim); }
+  #data-stream { font-size: 8px; color: rgba(0,212,255,0.4); letter-spacing: 1px; overflow: hidden; max-width: 50%; white-space: nowrap; text-overflow: ellipsis; }
 
-  /* ── FOOTER ── */
-  #footer {
-    grid-column: 1 / -1;
-    border-top: 1px solid rgba(0,153,204,0.3);
-    padding-top: 4px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .footer-item { font-size: clamp(7px, 0.85vw, 8px); letter-spacing: 2px; color: var(--white-dim); }
-  #data-stream {
-    font-size: 8px;
-    color: rgba(0,212,255,0.4);
-    letter-spacing: 1px;
-    overflow: hidden;
-    max-width: 60%;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  /* ── MODAL OVERLAY ── */
-  #modal {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,20,0.92);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-  }
+  /* MODAL */
+  #modal { display: none; position: fixed; inset: 0; background: rgba(0,0,20,0.92); z-index: 200; align-items: center; justify-content: center; flex-direction: column; }
   #modal.show { display: flex; }
-  #modal-box {
-    border: 1px solid var(--red-alert);
-    padding: 30px 40px;
-    text-align: center;
-    max-width: 480px;
-    box-shadow: 0 0 40px rgba(255,51,51,0.3);
-    animation: modalIn 0.3s ease;
-  }
+  #modal-box { border: 1px solid var(--red-alert); padding: 28px 36px; text-align: center; max-width: 520px; box-shadow: 0 0 40px rgba(255,51,51,0.3); animation: modalIn 0.3s ease; }
   @keyframes modalIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  #modal-title {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: 6px;
-    color: var(--red-alert);
-    text-shadow: 0 0 20px var(--red-alert);
-    margin-bottom: 10px;
-  }
-  #modal-body { font-size: 12px; color: var(--white); line-height: 1.8; margin-bottom: 20px; }
-  #modal-close {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 3px;
-    padding: 10px 30px;
-    border: 1px solid var(--blue-mid);
-    background: transparent;
-    color: var(--blue-bright);
-    cursor: pointer;
-    text-transform: uppercase;
-    -webkit-tap-highlight-color: transparent;
-  }
+  #modal-title { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: 6px; color: var(--red-alert); text-shadow: 0 0 20px var(--red-alert); margin-bottom: 10px; }
+  #modal-body { font-size: 13px; color: var(--white); line-height: 1.8; margin-bottom: 20px; }
+  #modal-close { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 3px; padding: 10px 30px; border: 1px solid var(--blue-mid); background: transparent; color: var(--blue-bright); cursor: pointer; text-transform: uppercase; -webkit-tap-highlight-color: transparent; }
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- HEADER -->
   <div id="header">
     <div class="logo-area">
       <div class="logo-main">JURASSIC WORLD</div>
@@ -444,128 +149,65 @@
     </div>
   </div>
 
-  <!-- LEFT PANEL -->
-  <div id="panel-left">
-
-    <div class="data-block">
-      <div class="block-label">ASSET BIOMETRICS</div>
-      <div class="vital-row">
-        <span class="vital-name">CORE TEMP</span>
-        <span class="vital-val" id="bio-temp">38.4°C</span>
-      </div>
-      <div class="bar-wrap"><div class="bar-fill" id="bar-temp" style="width:72%"></div></div>
-      <div class="vital-row">
-        <span class="vital-name">HEART RATE</span>
-        <span class="vital-val" id="bio-hr">62 BPM</span>
-      </div>
-      <div class="bar-wrap"><div class="bar-fill" id="bar-hr" style="width:55%"></div></div>
-      <div class="vital-row">
-        <span class="vital-name">MOTION INDEX</span>
-        <span class="vital-val" id="bio-motion">0.3 m/s</span>
-      </div>
-      <div class="bar-wrap"><div class="bar-fill" id="bar-motion" style="width:20%"></div></div>
-    </div>
-
-    <div class="data-block">
-      <div class="block-label">CONTAINMENT INTEGRITY</div>
-      <div class="fence-row">
-        <div class="fence-label"><span>PERIMETER FENCE A</span><span id="fence-a">100%</span></div>
-        <div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div>
-      </div>
-      <div class="fence-row">
-        <div class="fence-label"><span>PERIMETER FENCE B</span><span id="fence-b">100%</span></div>
-        <div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div>
-      </div>
-      <div class="fence-row">
-        <div class="fence-label"><span>INNER GATE</span><span>LOCKED</span></div>
-        <div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div>
-      </div>
-      <div class="fence-row">
-        <div class="fence-label"><span>GATE VOLTAGE</span><span id="voltage">10,000V</span></div>
-        <div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div>
-      </div>
-    </div>
-
-    <div class="data-block">
-      <div class="block-label">GPS TRANSPONDER</div>
-      <div class="vital-row">
-        <span class="vital-name">LAT</span>
-        <span class="vital-val" id="gps-lat">21.5082°N</span>
-      </div>
-      <div class="vital-row">
-        <span class="vital-name">LON</span>
-        <span class="vital-val" id="gps-lon">-157.8375°W</span>
-      </div>
-      <div class="vital-row">
-        <span class="vital-name">SIGNAL</span>
-        <span class="vital-val" style="color:var(--green-ok);text-shadow:0 0 8px var(--green-ok)" id="gps-signal">STRONG</span>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- CENTER PANEL -->
-  <div id="panel-center">
-
-    <div style="position:relative;margin-top:4px">
+  <div id="row-top">
+    <div id="radar-col">
       <div id="scan-container">
         <canvas id="radar-canvas" width="240" height="240"></canvas>
       </div>
       <div id="scan-label">THERMAL TRACKING · SECTOR 11</div>
     </div>
-
-    <div id="readout" style="margin-top:18px">
-      <div id="readout-text">SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.</div>
-    </div>
-
-    <div id="buttons">
-      <button class="btn" onclick="runThermalScan()">⬡ THERMAL SCAN</button>
-      <button class="btn" onclick="runAssetStatus()">◈ ASSET STATUS</button>
-      <button class="btn alert-btn" onclick="runAlertSequence()">⚠ BREACH ALERT</button>
-      <button class="btn" onclick="runSystemCheck()">◉ SYSTEM CHECK</button>
-    </div>
-
-  </div>
-
-  <!-- RIGHT PANEL -->
-  <div id="panel-right">
-
-    <div class="data-block">
-      <div class="block-label">DATA STREAM</div>
-      <div class="ticker-wrap">
-        <div class="ticker-text">CAMS ONLINE · TRACKING ACTIVE · GATE SECURE · CAMS ONLINE · TRACKING ACTIVE</div>
+    <div id="right-col">
+      <div id="readout">
+        <div id="readout-text">SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.</div>
+      </div>
+      <div id="buttons">
+        <button class="btn" onclick="runThermalScan()">⬡ THERMAL SCAN</button>
+        <button class="btn" onclick="runAssetStatus()">◈ ASSET STATUS</button>
+        <button class="btn alert-btn" onclick="runAlertSequence()">⚠ BREACH ALERT</button>
+        <button class="btn" onclick="runSystemCheck()">◉ SYSTEM CHECK</button>
       </div>
     </div>
+  </div>
 
+  <div id="row-data">
     <div class="data-block">
-      <div class="block-label">HEAT SIGNATURE MAP</div>
-      <canvas id="heatmap-canvas" width="200" height="76"></canvas>
+      <div class="block-label">ASSET BIOMETRICS</div>
+      <div class="vital-row"><span class="vital-name">CORE TEMP</span><span class="vital-val" id="bio-temp">38.4°C</span></div>
+      <div class="bar-wrap"><div class="bar-fill" id="bar-temp" style="width:72%"></div></div>
+      <div class="vital-row"><span class="vital-name">HEART RATE</span><span class="vital-val" id="bio-hr">62 BPM</span></div>
+      <div class="bar-wrap"><div class="bar-fill" id="bar-hr" style="width:55%"></div></div>
+      <div class="vital-row"><span class="vital-name">MOTION INDEX</span><span class="vital-val" id="bio-motion">0.3 m/s</span></div>
+      <div class="bar-wrap"><div class="bar-fill" id="bar-motion" style="width:20%"></div></div>
     </div>
+    <div class="data-block">
+      <div class="block-label">CONTAINMENT INTEGRITY</div>
+      <div class="fence-row"><div class="fence-label"><span>PERIMETER A</span><span id="fence-a">100%</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
+      <div class="fence-row"><div class="fence-label"><span>PERIMETER B</span><span id="fence-b">100%</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
+      <div class="fence-row"><div class="fence-label"><span>INNER GATE</span><span>LOCKED</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
+      <div class="fence-row"><div class="fence-label"><span>VOLTAGE</span><span id="voltage">10,000V</span></div><div class="fence-bar"><div class="fence-fill" style="width:100%"></div></div></div>
+    </div>
+    <div class="data-block">
+      <div class="block-label">GPS TRANSPONDER</div>
+      <div class="vital-row"><span class="vital-name">LAT</span><span class="vital-val" id="gps-lat">21.5082°N</span></div>
+      <div class="vital-row"><span class="vital-name">LON</span><span class="vital-val" id="gps-lon">157.8375°W</span></div>
+      <div class="vital-row"><span class="vital-name">SIGNAL</span><span class="vital-val" style="color:var(--green-ok);text-shadow:0 0 8px var(--green-ok)" id="gps-signal">STRONG</span></div>
+      <div style="margin-top:8px"><div class="block-label" style="margin-bottom:2px">ENCLOSURE</div>
+      <div class="vital-row"><span class="vital-name">CAMERAS</span><span class="vital-val" style="font-size:11px" id="cam-count">32 / 32</span></div>
+      <div class="vital-row"><span class="vital-name">UPTIME</span><span class="vital-val" style="font-size:11px" id="uptime">847:12:09</span></div></div>
+    </div>
+  </div>
 
-    <div class="data-block" style="flex:1">
+  <div id="row-bottom">
+    <div id="heatmap-block">
+      <div class="block-label">HEAT SIGNATURE MAP</div>
+      <canvas id="heatmap-canvas" width="400" height="200"></canvas>
+    </div>
+    <div id="log-block">
       <div class="block-label">ACTIVITY LOG</div>
       <div id="feed-log"></div>
     </div>
-
-    <div class="data-block">
-      <div class="block-label">ENCLOSURE STATS</div>
-      <div class="vital-row">
-        <span class="vital-name">SIZE</span>
-        <span class="vital-val" style="font-size:11px">2.0 km²</span>
-      </div>
-      <div class="vital-row">
-        <span class="vital-name">CAMERAS</span>
-        <span class="vital-val" style="font-size:11px" id="cam-count">32 / 32</span>
-      </div>
-      <div class="vital-row">
-        <span class="vital-name">UPTIME</span>
-        <span class="vital-val" style="font-size:11px" id="uptime">847:12:09</span>
-      </div>
-    </div>
-
   </div>
 
-  <!-- FOOTER -->
   <div id="footer">
     <div class="footer-item">INGEN BIOSYS · SECTOR 11 TERMINAL</div>
     <div id="data-stream">INIT...</div>
@@ -574,7 +216,6 @@
 
 </div>
 
-<!-- ALERT MODAL -->
 <div id="modal">
   <div id="modal-box">
     <div id="modal-title">⚠ CONTAINMENT BREACH</div>
@@ -584,90 +225,56 @@
 </div>
 
 <script>
-// ─── CLOCK ───────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  const s = String(now.getSeconds()).padStart(2,'0');
-  document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+  document.getElementById('clock').textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
   const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-  document.getElementById('date-display').textContent =
-    `${String(now.getDate()).padStart(2,'0')} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('date-display').textContent = `${String(now.getDate()).padStart(2,'0')} ${months[now.getMonth()]} ${now.getFullYear()}`;
 }
-setInterval(updateClock, 1000);
-updateClock();
+setInterval(updateClock, 1000); updateClock();
 
-// ─── PACKET COUNTER ──────────────────────────────────────
 let pkt = 0;
 setInterval(() => {
   pkt += Math.floor(Math.random() * 12) + 3;
   document.getElementById('packet-count').textContent = 'PKT: ' + String(pkt).padStart(6,'0');
 }, 300);
 
-// ─── DATA STREAM TICKER ───────────────────────────────────
-const streamPhrases = [
-  'BIOSCAN ACTIVE','MOTION SENSOR OK','GATE LOCK CONFIRMED',
-  'CAM 07 ONLINE','CAM 19 ONLINE','THERMAL REF STABLE',
-  'GPS LOCK · STRONG','HEARTBEAT RECV','ENCLOSURE SECURE',
-  'INGEN BIOSYS v4.2','PERIMETER NOMINAL','IR SENSOR ONLINE'
-];
+const streamPhrases = ['BIOSCAN ACTIVE','MOTION SENSOR OK','GATE LOCK CONFIRMED','CAM 07 ONLINE','CAM 19 ONLINE','THERMAL REF STABLE','GPS LOCK · STRONG','HEARTBEAT RECV','ENCLOSURE SECURE','INGEN BIOSYS v4.2','PERIMETER NOMINAL','IR SENSOR ONLINE'];
 let streamIdx = 0;
 setInterval(() => {
   streamIdx = (streamIdx + 1) % streamPhrases.length;
-  const extra = Math.floor(Math.random()*9999).toString().padStart(4,'0');
-  document.getElementById('data-stream').textContent = streamPhrases[streamIdx] + ' · 0x' + extra;
+  document.getElementById('data-stream').textContent = streamPhrases[streamIdx] + ' · 0x' + Math.floor(Math.random()*9999).toString().padStart(4,'0');
 }, 1400);
 
-// ─── ROLLING BIOMETRICS ───────────────────────────────────
 function randBetween(min, max) { return (Math.random()*(max-min)+min); }
 setInterval(() => {
-  const temp = randBetween(37.8, 39.2).toFixed(1);
-  const hr   = Math.floor(randBetween(55, 75));
-  const mot  = randBetween(0.1, 1.4).toFixed(1);
+  const temp = randBetween(37.8, 39.2).toFixed(1), hr = Math.floor(randBetween(55, 75)), mot = randBetween(0.1, 1.4).toFixed(1);
   document.getElementById('bio-temp').textContent = temp + '°C';
   document.getElementById('bio-hr').textContent = hr + ' BPM';
   document.getElementById('bio-motion').textContent = mot + ' m/s';
   document.getElementById('bar-temp').style.width = ((parseFloat(temp)-35)/10*100) + '%';
-  document.getElementById('bar-hr').style.width   = (hr/120*100) + '%';
+  document.getElementById('bar-hr').style.width = (hr/120*100) + '%';
   document.getElementById('bar-motion').style.width = (parseFloat(mot)/3*100) + '%';
 }, 2200);
 
-// GPS subtle drift
 setInterval(() => {
-  const lat = (21.5082 + randBetween(-0.0008, 0.0008)).toFixed(4);
-  const lon = (157.8375 + randBetween(-0.0008, 0.0008)).toFixed(4);
-  document.getElementById('gps-lat').textContent = lat + '°N';
-  document.getElementById('gps-lon').textContent = lon + '°W';
+  document.getElementById('gps-lat').textContent = (21.5082 + randBetween(-0.0008, 0.0008)).toFixed(4) + '°N';
+  document.getElementById('gps-lon').textContent = (157.8375 + randBetween(-0.0008, 0.0008)).toFixed(4) + '°W';
 }, 4000);
 
-// uptime counter
 let uptimeSec = 847 * 3600 + 12 * 60 + 9;
 setInterval(() => {
   uptimeSec++;
-  const h = Math.floor(uptimeSec/3600);
-  const m = Math.floor((uptimeSec%3600)/60);
-  const s = uptimeSec % 60;
-  document.getElementById('uptime').textContent =
-    `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  document.getElementById('uptime').textContent = `${Math.floor(uptimeSec/3600)}:${String(Math.floor((uptimeSec%3600)/60)).padStart(2,'0')}:${String(uptimeSec%60).padStart(2,'0')}`;
 }, 1000);
 
-// ─── ACTIVITY LOG ─────────────────────────────────────────
 const feedLog = document.getElementById('feed-log');
 const idleMessages = [
-  { txt: 'Perimeter sweep complete', cls: '' },
-  { txt: 'Bioscan pulse received', cls: '' },
-  { txt: 'Motion: NW quadrant — low', cls: '' },
-  { txt: 'Gate voltage nominal', cls: '' },
-  { txt: 'CAM 07 refresh OK', cls: '' },
-  { txt: 'GPS lock confirmed', cls: '' },
-  { txt: 'Thermal baseline stable', cls: '' },
-  { txt: 'HeartRate logged: nominal', cls: '' },
-  { txt: 'CAM 19 refresh OK', cls: '' },
-  { txt: 'Patrol interval: 04:00', cls: '' },
+  {txt:'Perimeter sweep complete',cls:''},{txt:'Bioscan pulse received',cls:''},{txt:'Motion: NW quadrant — low',cls:''},
+  {txt:'Gate voltage nominal',cls:''},{txt:'CAM 07 refresh OK',cls:''},{txt:'GPS lock confirmed',cls:''},
+  {txt:'Thermal baseline stable',cls:''},{txt:'HeartRate logged: nominal',cls:''},{txt:'CAM 19 refresh OK',cls:''},{txt:'Patrol interval: 04:00',cls:''},
 ];
 let idleIdx = 0;
-
 function addFeedEntry(text, cls='') {
   const now = new Date();
   const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
@@ -675,325 +282,102 @@ function addFeedEntry(text, cls='') {
   el.className = 'feed-entry' + (cls ? ' '+cls : '');
   el.innerHTML = `<span class="ts">${ts}</span>${text}`;
   feedLog.insertBefore(el, feedLog.firstChild);
-  while (feedLog.children.length > 10) feedLog.removeChild(feedLog.lastChild);
+  while (feedLog.children.length > 14) feedLog.removeChild(feedLog.lastChild);
 }
-
-setInterval(() => {
-  const msg = idleMessages[idleIdx % idleMessages.length];
-  addFeedEntry(msg.txt, msg.cls);
-  idleIdx++;
-}, 3500);
+setInterval(() => { const m = idleMessages[idleIdx % idleMessages.length]; addFeedEntry(m.txt, m.cls); idleIdx++; }, 3500);
 addFeedEntry('Terminal online', '');
 
-// ─── RADAR CANVAS ─────────────────────────────────────────
+// RADAR
 const radarCanvas = document.getElementById('radar-canvas');
 const rCtx = radarCanvas.getContext('2d');
-const CX = 120, CY = 120, R = 115;
-let radarAngle = 0;
-let radarBlips = [
-  { a: 0.8, r: 0.45 },
-  { a: 2.1, r: 0.7  },
-  { a: 4.5, r: 0.3  },
-];
-let scanMode = 'idle'; // idle | scanning | clear
-let scanFlash = 0;
-
+const CX=120,CY=120,R=115; let radarAngle=0;
+let radarBlips=[{a:0.8,r:0.45},{a:2.1,r:0.7},{a:4.5,r:0.3}];
+let scanMode='idle';
 function drawRadar() {
-  rCtx.clearRect(0, 0, 240, 240);
-
-  // background
-  rCtx.fillStyle = '#000d14';
-  rCtx.beginPath(); rCtx.arc(CX, CY, R, 0, Math.PI*2); rCtx.fill();
-
-  // rings
-  for (let i = 1; i <= 4; i++) {
-    rCtx.beginPath();
-    rCtx.arc(CX, CY, R*(i/4), 0, Math.PI*2);
-    rCtx.strokeStyle = 'rgba(0,212,255,0.15)';
-    rCtx.lineWidth = 1;
-    rCtx.stroke();
-  }
-
-  // crosshairs
-  rCtx.strokeStyle = 'rgba(0,212,255,0.12)';
-  rCtx.lineWidth = 1;
-  rCtx.beginPath(); rCtx.moveTo(CX-R, CY); rCtx.lineTo(CX+R, CY); rCtx.stroke();
-  rCtx.beginPath(); rCtx.moveTo(CX, CY-R); rCtx.lineTo(CX, CY+R); rCtx.stroke();
-  rCtx.beginPath(); rCtx.moveTo(CX-R*0.7, CY-R*0.7); rCtx.lineTo(CX+R*0.7, CY+R*0.7); rCtx.stroke();
-  rCtx.beginPath(); rCtx.moveTo(CX+R*0.7, CY-R*0.7); rCtx.lineTo(CX-R*0.7, CY+R*0.7); rCtx.stroke();
-
-  // sweep
-  const grad = rCtx.createConicalGradient
-    ? null // not standard; use arc approach
-    : null;
-  // draw sweep wedge
-  rCtx.save();
-  rCtx.translate(CX, CY);
-  const wedge = rCtx.createLinearGradient(0, 0, R * Math.cos(radarAngle), R * Math.sin(radarAngle));
-  wedge.addColorStop(0, 'rgba(0,212,255,0.35)');
-  wedge.addColorStop(1, 'rgba(0,212,255,0)');
-  rCtx.beginPath();
-  rCtx.moveTo(0, 0);
-  rCtx.arc(0, 0, R, radarAngle - 0.9, radarAngle, false);
-  rCtx.closePath();
-  rCtx.fillStyle = wedge;
-  rCtx.fill();
-  rCtx.restore();
-
-  // sweep line
-  rCtx.save();
-  rCtx.translate(CX, CY);
-  rCtx.rotate(radarAngle);
-  rCtx.beginPath(); rCtx.moveTo(0,0); rCtx.lineTo(R, 0);
-  rCtx.strokeStyle = 'rgba(0,212,255,0.9)';
-  rCtx.lineWidth = 1.5;
-  rCtx.stroke();
-  rCtx.restore();
-
-  // blips
-  if (scanMode !== 'clear') {
-    radarBlips.forEach(b => {
-      const bx = CX + Math.cos(b.a) * R * b.r;
-      const by = CY + Math.sin(b.a) * R * b.r;
-      const angleDiff = ((radarAngle - b.a) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
-      const fade = Math.max(0, 1 - angleDiff / (Math.PI * 1.5));
-      rCtx.beginPath();
-      rCtx.arc(bx, by, 4, 0, Math.PI*2);
-      rCtx.fillStyle = scanMode === 'scanning'
-        ? `rgba(0,255,136,${0.4 + fade*0.6})`
-        : `rgba(0,212,255,${0.2 + fade*0.8})`;
-      rCtx.fill();
-      if (fade > 0.5) {
-        rCtx.beginPath();
-        rCtx.arc(bx, by, 7, 0, Math.PI*2);
-        rCtx.strokeStyle = scanMode === 'scanning'
-          ? `rgba(0,255,136,${fade*0.5})`
-          : `rgba(0,212,255,${fade*0.3})`;
-        rCtx.lineWidth = 1;
-        rCtx.stroke();
-      }
-    });
-  }
-
-  // center dot
-  rCtx.beginPath(); rCtx.arc(CX, CY, 3, 0, Math.PI*2);
-  rCtx.fillStyle = 'rgba(0,212,255,0.8)'; rCtx.fill();
-
-  // clip to circle
-  rCtx.save();
-  rCtx.globalCompositeOperation = 'destination-in';
-  rCtx.beginPath(); rCtx.arc(CX, CY, R, 0, Math.PI*2);
-  rCtx.fillStyle = '#fff'; rCtx.fill();
-  rCtx.restore();
-
-  radarAngle += 0.025;
-  if (radarAngle > Math.PI * 2) radarAngle -= Math.PI * 2;
+  rCtx.clearRect(0,0,240,240);
+  rCtx.fillStyle='#000d14'; rCtx.beginPath(); rCtx.arc(CX,CY,R,0,Math.PI*2); rCtx.fill();
+  for(let i=1;i<=4;i++){rCtx.beginPath();rCtx.arc(CX,CY,R*(i/4),0,Math.PI*2);rCtx.strokeStyle='rgba(0,212,255,0.15)';rCtx.lineWidth=1;rCtx.stroke();}
+  rCtx.strokeStyle='rgba(0,212,255,0.12)';rCtx.lineWidth=1;
+  [[CX-R,CY,CX+R,CY],[CX,CY-R,CX,CY+R],[CX-R*.7,CY-R*.7,CX+R*.7,CY+R*.7],[CX+R*.7,CY-R*.7,CX-R*.7,CY+R*.7]].forEach(([x1,y1,x2,y2])=>{rCtx.beginPath();rCtx.moveTo(x1,y1);rCtx.lineTo(x2,y2);rCtx.stroke();});
+  rCtx.save();rCtx.translate(CX,CY);
+  const w=rCtx.createLinearGradient(0,0,R*Math.cos(radarAngle),R*Math.sin(radarAngle));
+  w.addColorStop(0,'rgba(0,212,255,0.35)');w.addColorStop(1,'rgba(0,212,255,0)');
+  rCtx.beginPath();rCtx.moveTo(0,0);rCtx.arc(0,0,R,radarAngle-0.9,radarAngle,false);rCtx.closePath();rCtx.fillStyle=w;rCtx.fill();rCtx.restore();
+  rCtx.save();rCtx.translate(CX,CY);rCtx.rotate(radarAngle);rCtx.beginPath();rCtx.moveTo(0,0);rCtx.lineTo(R,0);rCtx.strokeStyle='rgba(0,212,255,0.9)';rCtx.lineWidth=1.5;rCtx.stroke();rCtx.restore();
+  if(scanMode!=='clear'){radarBlips.forEach(b=>{
+    const bx=CX+Math.cos(b.a)*R*b.r,by=CY+Math.sin(b.a)*R*b.r;
+    const ad=((radarAngle-b.a)%(Math.PI*2)+Math.PI*2)%(Math.PI*2),fade=Math.max(0,1-ad/(Math.PI*1.5));
+    rCtx.beginPath();rCtx.arc(bx,by,4,0,Math.PI*2);
+    rCtx.fillStyle=scanMode==='scanning'?`rgba(0,255,136,${0.4+fade*.6})`:`rgba(0,212,255,${0.2+fade*.8})`;rCtx.fill();
+    if(fade>.5){rCtx.beginPath();rCtx.arc(bx,by,7,0,Math.PI*2);rCtx.strokeStyle=scanMode==='scanning'?`rgba(0,255,136,${fade*.5})`:`rgba(0,212,255,${fade*.3})`;rCtx.lineWidth=1;rCtx.stroke();}
+  });}
+  rCtx.beginPath();rCtx.arc(CX,CY,3,0,Math.PI*2);rCtx.fillStyle='rgba(0,212,255,0.8)';rCtx.fill();
+  rCtx.save();rCtx.globalCompositeOperation='destination-in';rCtx.beginPath();rCtx.arc(CX,CY,R,0,Math.PI*2);rCtx.fillStyle='#fff';rCtx.fill();rCtx.restore();
+  radarAngle+=0.025;if(radarAngle>Math.PI*2)radarAngle-=Math.PI*2;
   requestAnimationFrame(drawRadar);
 }
 drawRadar();
 
-// ─── HEAT MAP CANVAS ──────────────────────────────────────
-const hmCanvas = document.getElementById('heatmap-canvas');
-const hCtx = hmCanvas.getContext('2d');
-let heatBlobs = [{ x: 70, y: 50, r: 28, vx: 0.3, vy: 0.1 }];
-
-function drawHeatmap() {
-  hCtx.clearRect(0, 0, 200, 76);
-  hCtx.fillStyle = '#000d14'; hCtx.fillRect(0, 0, 200, 76);
-
-  // grid
-  hCtx.strokeStyle = 'rgba(0,212,255,0.08)'; hCtx.lineWidth = 1;
-  for (let x = 0; x <= 200; x += 20) {
-    hCtx.beginPath(); hCtx.moveTo(x, 0); hCtx.lineTo(x, 100); hCtx.stroke();
-  }
-  for (let y = 0; y <= 76; y += 20) {
-    hCtx.beginPath(); hCtx.moveTo(0, y); hCtx.lineTo(200, y); hCtx.stroke();
-  }
-
-  heatBlobs.forEach(b => {
-    const g = hCtx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
-    g.addColorStop(0, 'rgba(255,80,0,0.9)');
-    g.addColorStop(0.4, 'rgba(255,160,0,0.5)');
-    g.addColorStop(1, 'rgba(0,212,255,0)');
-    hCtx.beginPath(); hCtx.arc(b.x, b.y, b.r, 0, Math.PI*2);
-    hCtx.fillStyle = g; hCtx.fill();
-    b.x += b.vx + randBetween(-0.2, 0.2);
-    b.y += b.vy + randBetween(-0.1, 0.1);
-    if (b.x < b.r || b.x > 200-b.r) b.vx *= -1;
-    if (b.y < b.r || b.y > 76-b.r) b.vy *= -1;
+// HEATMAP - draws to canvas actual pixel size
+const hmCanvas=document.getElementById('heatmap-canvas');
+const hCtx=hmCanvas.getContext('2d');
+let heatBlobs=[{x:200,y:100,r:42,vx:0.5,vy:0.2}];
+function drawHeatmap(){
+  const W=hmCanvas.width,H=hmCanvas.height;
+  hCtx.clearRect(0,0,W,H);hCtx.fillStyle='#000d14';hCtx.fillRect(0,0,W,H);
+  hCtx.strokeStyle='rgba(0,212,255,0.08)';hCtx.lineWidth=1;
+  for(let x=0;x<=W;x+=20){hCtx.beginPath();hCtx.moveTo(x,0);hCtx.lineTo(x,H);hCtx.stroke();}
+  for(let y=0;y<=H;y+=20){hCtx.beginPath();hCtx.moveTo(0,y);hCtx.lineTo(W,y);hCtx.stroke();}
+  heatBlobs.forEach(b=>{
+    const g=hCtx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);
+    g.addColorStop(0,'rgba(255,80,0,0.9)');g.addColorStop(0.4,'rgba(255,160,0,0.5)');g.addColorStop(1,'rgba(0,212,255,0)');
+    hCtx.beginPath();hCtx.arc(b.x,b.y,b.r,0,Math.PI*2);hCtx.fillStyle=g;hCtx.fill();
+    b.x+=b.vx+randBetween(-0.2,0.2);b.y+=b.vy+randBetween(-0.1,0.1);
+    if(b.x<b.r||b.x>W-b.r)b.vx*=-1;if(b.y<b.r||b.y>H-b.r)b.vy*=-1;
   });
-
-  // label
-  hCtx.fillStyle = 'rgba(0,212,255,0.5)';
-  hCtx.font = '7px Share Tech Mono, monospace';
-  hCtx.fillText('THERMAL · SECTOR 11', 4, 71);
+  hCtx.fillStyle='rgba(0,212,255,0.5)';hCtx.font='8px Share Tech Mono,monospace';hCtx.fillText('THERMAL · SECTOR 11',6,H-6);
 }
-setInterval(drawHeatmap, 80);
+setInterval(drawHeatmap,80);
 
-// ─── READOUT HELPER ──────────────────────────────────────
-let readoutLocked = false;
-function setReadout(lines, cls='', duration=0) {
-  const el = document.getElementById('readout-text');
-  el.className = cls;
-  let i = 0;
-  el.textContent = '';
-  function typeNext() {
-    if (i < lines.length) {
-      el.textContent += (i > 0 ? '\n' : '') + lines[i];
-      i++;
-      setTimeout(typeNext, 220);
-    }
-  }
+// READOUT
+let readoutLocked=false;
+function setReadout(lines,cls='',duration=0){
+  const el=document.getElementById('readout-text');el.className=cls;let i=0;el.textContent='';
+  function typeNext(){if(i<lines.length){el.textContent+=(i>0?'\n':'')+lines[i];i++;setTimeout(typeNext,220);}}
   typeNext();
-  if (duration > 0) {
-    setTimeout(() => {
-      if (readoutLocked) return;
-      el.className = '';
-      el.textContent = 'SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.';
-    }, duration);
-  }
+  if(duration>0){setTimeout(()=>{if(readoutLocked)return;el.className='';el.textContent='SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.';},duration);}
 }
+function lockButtons(ms){document.querySelectorAll('.btn').forEach(b=>b.classList.add('disabled'));setTimeout(()=>document.querySelectorAll('.btn').forEach(b=>b.classList.remove('disabled')),ms);}
 
-function lockButtons(ms) {
-  document.querySelectorAll('.btn').forEach(b => b.classList.add('disabled'));
-  setTimeout(() => document.querySelectorAll('.btn').forEach(b => b.classList.remove('disabled')), ms);
+function runThermalScan(){
+  if(document.querySelector('.btn.disabled'))return;
+  lockButtons(9000);scanMode='scanning';addFeedEntry('Thermal scan initiated','warn');
+  setReadout(['INITIATING THERMAL SCAN...','CALIBRATING IR ARRAY...'],'amber');playTone(440,0.3,'triangle');
+  setTimeout(()=>{setReadout(['SCANNING SECTOR 11...','SWEEP IN PROGRESS...'],'amber');addFeedEntry('IR sweep: sector 11','warn');},2000);
+  setTimeout(()=>{setReadout(['PROCESSING SIGNATURE DATA...'],'amber');},4000);
+  setTimeout(()=>{scanMode='clear';addFeedEntry('Thermal result: NO ASSET','err');setReadout(['SCAN COMPLETE.','','⚠  NO ASSET DETECTED.','TRANSPONDER OFFLINE.'],'alert');document.getElementById('status-pill').style.color='var(--red-alert)';document.getElementById('status-pill').style.borderColor='var(--red-alert)';document.getElementById('status-pill').textContent='● UNCONFIRMED';playTone(220,0.8,'sawtooth');},6500);
+  setTimeout(()=>{scanMode='idle';document.getElementById('status-pill').style.color='var(--green-ok)';document.getElementById('status-pill').style.borderColor='var(--green-ok)';document.getElementById('status-pill').textContent='● SECURE';setReadout(['SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.']);addFeedEntry('Status restored: nominal','');},12000);
 }
-
-// ─── THERMAL SCAN ─────────────────────────────────────────
-function runThermalScan() {
-  if (document.querySelector('.btn.disabled')) return;
-  lockButtons(9000);
-  scanMode = 'scanning';
-  addFeedEntry('Thermal scan initiated', 'warn');
-  setReadout(['INITIATING THERMAL SCAN...', 'CALIBRATING IR ARRAY...'], 'amber');
-
-  // alert sound — triangle tone
-  playTone(440, 0.3, 'triangle');
-
-  setTimeout(() => {
-    setReadout(['SCANNING SECTOR 11...', 'SWEEP IN PROGRESS...'], 'amber');
-    addFeedEntry('IR sweep: sector 11', 'warn');
-  }, 2000);
-
-  setTimeout(() => {
-    setReadout(['PROCESSING SIGNATURE DATA...'], 'amber');
-  }, 4000);
-
-  setTimeout(() => {
-    scanMode = 'clear';
-    addFeedEntry('Thermal result: NO ASSET', 'err');
-    setReadout(['SCAN COMPLETE.','','⚠  NO ASSET DETECTED.','TRANSPONDER OFFLINE.'], 'alert');
-    document.getElementById('status-pill').style.color = 'var(--red-alert)';
-    document.getElementById('status-pill').style.borderColor = 'var(--red-alert)';
-    document.getElementById('status-pill').textContent = '● UNCONFIRMED';
-    playTone(220, 0.8, 'sawtooth');
-  }, 6500);
-
-  setTimeout(() => {
-    scanMode = 'idle';
-    document.getElementById('status-pill').style.color = 'var(--green-ok)';
-    document.getElementById('status-pill').style.borderColor = 'var(--green-ok)';
-    document.getElementById('status-pill').textContent = '● SECURE';
-    setReadout(['SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.']);
-    addFeedEntry('Status restored: nominal', '');
-  }, 12000);
+function runAssetStatus(){
+  if(document.querySelector('.btn.disabled'))return;lockButtons(7000);playTone(660,0.15,'sine');addFeedEntry('Asset status request','');setReadout(['QUERYING ASSET DATABASE...'],'amber');
+  setTimeout(()=>{setReadout(['ASSET: I. REX — FEMALE','SPECIES: HYBRID THEROPOD','LENGTH: 15.2m  |  MASS: 8,200kg','STATUS: CONTAINED','LAST GPS FIX: 00:02:14 AGO'],'ok');addFeedEntry('Asset record retrieved','');},1800);
+  setTimeout(()=>{setReadout(['SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.']);},7000);
 }
-
-// ─── ASSET STATUS ─────────────────────────────────────────
-function runAssetStatus() {
-  if (document.querySelector('.btn.disabled')) return;
-  lockButtons(7000);
-  playTone(660, 0.15, 'sine');
-  addFeedEntry('Asset status request', '');
-  setReadout(['QUERYING ASSET DATABASE...'], 'amber');
-
-  setTimeout(() => {
-    setReadout([
-      'ASSET: I. REX — FEMALE',
-      'SPECIES: HYBRID THEROPOD',
-      'LENGTH: 15.2m  |  MASS: 8,200kg',
-      'STATUS: CONTAINED',
-      'LAST GPS FIX: 00:02:14 AGO'
-    ], 'ok');
-    addFeedEntry('Asset record retrieved', '');
-  }, 1800);
-
-  setTimeout(() => {
-    setReadout(['SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.']);
-  }, 7000);
+function runAlertSequence(){
+  if(document.querySelector('.btn.disabled'))return;lockButtons(10000);addFeedEntry('BREACH ALERT TRIGGERED','err');playTone(330,1.2,'sawtooth');
+  document.getElementById('modal-title').textContent='⚠ CONTAINMENT BREACH';
+  document.getElementById('modal-body').innerHTML='PADDOCK 11 — INDOMINUS REX<br><br>PERIMETER FENCE B VOLTAGE LOSS DETECTED.<br>GPS TRANSPONDER SIGNAL LOST.<br>ASSET LOCATION UNCONFIRMED.<br><br>ACU RESPONSE TEAM DISPATCHED.<br>ALL PERSONNEL: EVACUATE SECTOR 11.';
+  document.getElementById('modal').classList.add('show');setReadout(['⚠ CONTAINMENT BREACH DETECTED'],'alert');
 }
-
-// ─── BREACH ALERT ─────────────────────────────────────────
-function runAlertSequence() {
-  if (document.querySelector('.btn.disabled')) return;
-  lockButtons(10000);
-  addFeedEntry('BREACH ALERT TRIGGERED', 'err');
-  playTone(330, 1.2, 'sawtooth');
-
-  document.getElementById('modal-title').textContent = '⚠ CONTAINMENT BREACH';
-  document.getElementById('modal-body').innerHTML =
-    'PADDOCK 11 — INDOMINUS REX<br><br>' +
-    'PERIMETER FENCE B VOLTAGE LOSS DETECTED.<br>' +
-    'GPS TRANSPONDER SIGNAL LOST.<br>' +
-    'ASSET LOCATION UNCONFIRMED.<br><br>' +
-    'ACU RESPONSE TEAM DISPATCHED.<br>' +
-    'ALL PERSONNEL: EVACUATE SECTOR 11.';
-  document.getElementById('modal').classList.add('show');
-  setReadout(['⚠ CONTAINMENT BREACH DETECTED'], 'alert');
+function closeModal(){document.getElementById('modal').classList.remove('show');addFeedEntry('Alert acknowledged','warn');setReadout(['SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.']);document.querySelectorAll('.btn').forEach(b=>b.classList.remove('disabled'));}
+function runSystemCheck(){
+  if(document.querySelector('.btn.disabled'))return;lockButtons(8000);playTone(880,0.1,'sine');addFeedEntry('System check initiated','');
+  const checks=['CHECKING NETWORK UPLINK...','VERIFYING FENCE VOLTAGE...','TESTING CAMERA FEEDS (32)...','GPS TRANSPONDER PING...','MOTION SENSOR ARRAY...','ALL SYSTEMS NOMINAL. ✓'];
+  let ci=0;function nextCheck(){if(ci<checks.length){setReadout([checks[ci]],ci===checks.length-1?'ok':'amber');addFeedEntry(checks[ci].replace('...',''),'');ci++;setTimeout(nextCheck,1100);}}nextCheck();
+  setTimeout(()=>{setReadout(['SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.']);},8000);
 }
-
-function closeModal() {
-  document.getElementById('modal').classList.remove('show');
-  addFeedEntry('Alert acknowledged', 'warn');
-  setReadout(['SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.']);
-  document.querySelectorAll('.btn').forEach(b => b.classList.remove('disabled'));
-}
-
-// ─── SYSTEM CHECK ─────────────────────────────────────────
-function runSystemCheck() {
-  if (document.querySelector('.btn.disabled')) return;
-  lockButtons(8000);
-  playTone(880, 0.1, 'sine');
-  addFeedEntry('System check initiated', '');
-
-  const checks = [
-    'CHECKING NETWORK UPLINK...',
-    'VERIFYING FENCE VOLTAGE...',
-    'TESTING CAMERA FEEDS (32)...',
-    'GPS TRANSPONDER PING...',
-    'MOTION SENSOR ARRAY...',
-    'ALL SYSTEMS NOMINAL. ✓',
-  ];
-  let ci = 0;
-  function nextCheck() {
-    if (ci < checks.length) {
-      setReadout([checks[ci]], ci === checks.length-1 ? 'ok' : 'amber');
-      addFeedEntry(checks[ci].replace('...',''), ci === checks.length-1 ? '' : '');
-      ci++;
-      setTimeout(nextCheck, 1100);
-    }
-  }
-  nextCheck();
-
-  setTimeout(() => {
-    setReadout(['SYSTEM NOMINAL. ALL CONTAINMENT PARAMETERS WITHIN ACCEPTABLE RANGE. ASSET LOCATED IN NORTHWEST QUADRANT.']);
-  }, 8000);
-}
-
-// ─── AUDIO ────────────────────────────────────────────────
-function playTone(freq, duration, type='sine') {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + duration);
-  } catch(e) {}
+function playTone(freq,duration,type='sine'){
+  try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const osc=ctx.createOscillator();const gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type=type;osc.frequency.setValueAtTime(freq,ctx.currentTime);gain.gain.setValueAtTime(0.15,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+duration);osc.start(ctx.currentTime);osc.stop(ctx.currentTime+duration);}catch(e){}
 }
 </script>
 </body>
