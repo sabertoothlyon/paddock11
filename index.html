@@ -224,16 +224,16 @@
   <!-- ── THIRD 2: Big Buttons ── -->
   <div id="third-mid">
     <div id="buttons">
-      <button class="btn" onclick="runThermalScan()">
+      <button class="btn" onclick="handleBtnSequence('T'); runThermalScan()">
         <div class="btn-inner"><span class="btn-icon">⬡</span>THERMAL SCAN</div>
       </button>
-      <button class="btn" onclick="runAssetStatus()">
+      <button class="btn" onclick="handleBtnSequence('A'); runAssetStatus()">
         <div class="btn-inner"><span class="btn-icon">◈</span>ASSET STATUS</div>
       </button>
-      <button class="btn alert-btn" onclick="runAlertSequence()">
+      <button class="btn alert-btn" onclick="handleBtnSequence('B'); runAlertSequence()">
         <div class="btn-inner"><span class="btn-icon">⚠</span>BREACH ALERT</div>
       </button>
-      <button class="btn" onclick="runSystemCheck()">
+      <button class="btn" onclick="handleBtnSequence('S'); runSystemCheck()">
         <div class="btn-inner"><span class="btn-icon">◉</span>SYSTEM CHECK</div>
       </button>
     </div>
@@ -473,7 +473,7 @@ const easterEggs = {
     icon: '🦕',
     label: '// RAPTOR UNIT ONLINE //',
     title: 'CLEVER GIRL',
-    body: `Muldoon's last words before Raptor Unit Delta flanked him in the JP1 paddock sequence — filmed on location in Kauaʻi, 1992.<br><br>Robert Muldoon's actor Bob Peck improvised the delivery. Spielberg kept it in one take.<br><br>The raptors in that scene were a combination of full-scale rod puppets built by Stan Winston Studio and crew members in suits. No CGI.`
+    body: `Muldoon's last words before a raptor flanked him in the paddock sequence — filmed in Kauaʻi, 1992.<br><br>Bob Peck delivered it quietly, almost to himself. Spielberg kept it in one take.<br><br>The raptors in that scene were a combination of full-scale rod puppets built by Stan Winston Studio and performers in suits. The final kill is implied, never shown.`
   },
   // BBTT → Kualoa Ranch filming history
   'BBTT': {
@@ -481,7 +481,7 @@ const easterEggs = {
     icon: '🌿',
     label: '// KUALOA RANCH ARCHIVE //',
     title: 'KAʻAʻAWA VALLEY',
-    body: `The valley you're standing in — Kaʻaʻawa — has appeared in over 70 feature films and TV productions since the 1950s.<br><br>Jurassic Park (1993) used it as the main dinosaur plains. Jurassic World (2015) returned for the Gyrosphere field sequences. Fallen Kingdom (2018) filmed the eruption evacuation scenes along the valley floor — the same road the M-Trucks run today.<br><br>The Ko'olau cliffs in the background are around 3,000 feet tall and were formed by volcanic collapse roughly 2.5 million years ago.`
+    body: `The valley you're standing in has appeared in over 70 feature films and TV productions since the 1950s.<br><br>Jurassic Park (1993) filmed its sweeping dinosaur plains sequences here — the shots Grant and Sattler see from the helicopter. The franchise went dormant at Kualoa for over two decades before Jurassic World (2015) returned for the Gyrosphere field and valley scenes. Fallen Kingdom (2018) came back again for the volcanic eruption evacuation — the same valley road the M-Trucks run today.<br><br>The Ko'olau cliffs behind you are around 3,000 feet tall, formed by volcanic collapse roughly 2.5 million years ago.`
   },
   // STAS → JP1 BTS
   'STAS': {
@@ -489,7 +489,7 @@ const easterEggs = {
     icon: '🎬',
     label: '// INGEN ARCHIVE — 1993 //',
     title: 'JURASSIC PARK',
-    body: `The iconic waterfall scene where Grant and the kids cling to the fence while the T-Rex roars — that was shot at Mānoa Falls on Oʻahu, not at Kualoa.<br><br>But the helicopter arrival sequence in the opening? That's Kaʻaʻawa Valley. The lush green plains Grant sees from the air when he whispers "It's a dinosaur" are the same mountains visible from this terminal's location.<br><br>Spielberg originally planned animatronics only. ILM's CGI test reel of a T-Rex running changed his mind in a single meeting.`
+    body: `The helicopter arrival sequence — the moment Grant whispers "It's a dinosaur" — was filmed right here in Kaʻaʻawa Valley. Those are the Ko'olau ridgelines you're looking at now.<br><br>Spielberg originally planned to rely entirely on animatronics. ILM's CGI test reel of a running T-Rex changed his mind in a single meeting. The film ended up using both — the close, tactile shots are Stan Winston animatronics; the wide running shots are ILM.<br><br>Principal photography wrapped in November 1992. The film released June 11, 1993 and grossed $1 billion worldwide.`
   },
   // ASBA → Fallen Kingdom BTS
   'ASBA': {
@@ -497,7 +497,7 @@ const easterEggs = {
     icon: '🌋',
     label: '// INGEN ARCHIVE — 2018 //',
     title: 'FALLEN KINGDOM',
-    body: `Jurassic World: Fallen Kingdom (2018) returned to Kualoa for the volcanic eruption evacuation sequence. The crew rigged pyrotechnic ash mortars along the valley road to simulate lava flow.<br><br>The brachiosaurus silhouette on the dock — the most talked-about shot in the film — was added entirely in post. No location shoot. Director J.A. Bayona said it was the emotional centerpiece he built the whole film around.<br><br>Production used roughly 200 extras from Oʻahu for the evacuation crowd scenes.`
+    body: `Jurassic World: Fallen Kingdom (2018) returned to Kualoa for the volcanic eruption evacuation sequence. The production rigged pyrotechnic mortars along the valley floor to simulate ash fall and lava proximity.<br><br>The brachiosaurus silhouette on the dock — the shot that hit hardest — was added entirely in post-production. No location element. Director J.A. Bayona built the film's emotional arc around that single image.<br><br>The franchise's 22-year gap between Jurassic Park and Jurassic World meant many of the Kualoa crew who worked the original had retired by the time production returned.`
   }
 };
 
@@ -505,9 +505,11 @@ function handleBtnSequence(code) {
   clearTimeout(seqTimer);
   btnSequence.push(code);
   if (btnSequence.length > 4) btnSequence.shift();
-  const key = btnSequence.join('');
-  const egg = easterEggs[key] || (btnSequence.length >= 4 ? easterEggs[btnSequence.slice(-4).join('')] : null);
-  if (egg) {
+  const last4 = btnSequence.slice(-4).join('');
+  const last3 = btnSequence.slice(-3).join('');
+  const last2 = btnSequence.slice(-2).join('');
+  const egg = easterEggs[last4] || easterEggs[last3] || easterEggs[last2];
+  if (egg && (easterEggs[last4] ? last4.length === 4 : easterEggs[last3] ? last3.length === 3 : last2.length === 2)) {
     btnSequence = [];
     clearTimeout(seqTimer);
     showEgg(egg);
@@ -515,16 +517,6 @@ function handleBtnSequence(code) {
   }
   seqTimer = setTimeout(() => { btnSequence = []; }, 5000);
 }
-
-// Hook into existing button functions via wrapper
-const _origThermal = runThermalScan;
-runThermalScan = function() { handleBtnSequence('T'); _origThermal(); };
-const _origAsset = runAssetStatus;
-runAssetStatus = function() { handleBtnSequence('A'); _origAsset(); };
-const _origAlert = runAlertSequence;
-runAlertSequence = function() { handleBtnSequence('B'); _origAlert(); };
-const _origCheck = runSystemCheck;
-runSystemCheck = function() { handleBtnSequence('S'); _origCheck(); };
 
 // Easter egg modal
 function showEgg(egg) {
@@ -576,7 +568,7 @@ makeTripleTap('logo-tap', () => {
     icon: '🧬',
     label: '// INGEN INTERNAL MEMO //',
     title: 'SITE B — ISLA SORNA',
-    body: `Kualoa Ranch served as a filming location double for both Isla Nublar and, in wide establishing shots, Isla Sorna across multiple productions.<br><br>The ranch's 4,000 acres include four distinct valleys. Productions typically use Kaʻaʻawa as the primary "island interior" — it reads as isolated and primeval on camera. The Ko'olau ridgeline's near-vertical walls make it effectively impossible to shoot any modern infrastructure into frame.<br><br>InGen's fictional Site B operations were partially inspired by real DARPA research into accelerated growth factors. The embryo storage unit Nedry stole held 15 species — the Barbasol can held dry ice at -196°C.`
+    body: `Kualoa Ranch's Kaʻaʻawa Valley was first scouted for Jurassic Park in 1992. Spielberg's location team needed a valley that looked isolated, primeval, and impossible to place — somewhere the audience couldn't pin to a real country.<br><br>The Ko'olau ridgeline delivers that. Its near-vertical walls make it effectively impossible to shoot modern infrastructure into frame. The franchise went dark at Kualoa for over 20 years before returning for Jurassic World in 2015 — then again for Fallen Kingdom in 2018.<br><br>The InGen file you're reading doesn't exist. But this valley does.`
   });
 });
 
