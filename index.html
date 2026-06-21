@@ -199,13 +199,12 @@
       </div>
       <div class="header-center">
         <div class="paddock-id" id="paddock-tap">PADDOCK 11</div>
-        <div class="paddock-name">INDOMINUS REX</div>
+        <div class="paddock-name" id="paddock-name-tap">INDOMINUS REX</div>
       </div>
       <div class="header-right">
         <div id="clock">--:--:--</div>
         <div id="date-display">--.--.----</div>
-        <div id="status-pill">● SECURE</div>
-      </div>
+        <div id="status-pill">● SECURE</div>      </div>
     </div>
 
     <div id="radar-readout-row">
@@ -224,16 +223,16 @@
   <!-- ── THIRD 2: Big Buttons ── -->
   <div id="third-mid">
     <div id="buttons">
-      <button class="btn" onclick="handleBtnSequence('T'); runThermalScan()">
+      <button class="btn" onclick="runThermalScan()">
         <div class="btn-inner"><span class="btn-icon">⬡</span>THERMAL SCAN</div>
       </button>
-      <button class="btn" onclick="handleBtnSequence('A'); runAssetStatus()">
+      <button class="btn" onclick="runAssetStatus()">
         <div class="btn-inner"><span class="btn-icon">◈</span>ASSET STATUS</div>
       </button>
-      <button class="btn alert-btn" onclick="handleBtnSequence('B'); runAlertSequence()">
+      <button class="btn alert-btn" onclick="runAlertSequence()">
         <div class="btn-inner"><span class="btn-icon">⚠</span>BREACH ALERT</div>
       </button>
-      <button class="btn" onclick="handleBtnSequence('S'); runSystemCheck()">
+      <button class="btn" onclick="runSystemCheck()">
         <div class="btn-inner"><span class="btn-icon">◉</span>SYSTEM CHECK</div>
       </button>
     </div>
@@ -461,38 +460,40 @@ function playTone(freq,duration,type='sine'){
 }
 
 // ── EASTER EGGS ──────────────────────────────────────────────────────────────
+// Tap-zone sequence system
+// Zones: P=paddock-tap, L=logo-tap, R=radar-canvas, S=status-pill, C=scan-label, O=readout, N=paddock-name-tap
+// Sequences of 3–4 taps on passive elements (no lockout interference)
 
-// Button sequence tracker (T=thermal, A=asset, B=breach, S=system)
-let btnSequence = [];
-let seqTimer = null;
+let zoneSequence = [];
+let zoneTimer = null;
 
-const easterEggs = {
-  // TASB → "Clever girl"
-  'TASB': {
+const zoneEggs = {
+  // Logo → Radar → Status → Logo : Clever girl
+  'LRSL': {
     style: '',
     icon: '🦕',
     label: '// RAPTOR UNIT ONLINE //',
     title: 'CLEVER GIRL',
     body: `Muldoon's last words before a raptor flanked him in the paddock sequence — filmed in Kauaʻi, 1992.<br><br>Bob Peck delivered it quietly, almost to himself. Spielberg kept it in one take.<br><br>The raptors in that scene were a combination of full-scale rod puppets built by Stan Winston Studio and performers in suits. The final kill is implied, never shown.`
   },
-  // BBTT → Kualoa Ranch filming history
-  'BBTT': {
+  // Status → Scan → Status → Scan : Kualoa history
+  'SCSC': {
     style: 'green',
     icon: '🌿',
     label: '// KUALOA RANCH ARCHIVE //',
     title: 'KAʻAʻAWA VALLEY',
     body: `The valley you're standing in has appeared in over 70 feature films and TV productions since the 1950s.<br><br>Jurassic Park (1993) filmed its sweeping dinosaur plains sequences here — the shots Grant and Sattler see from the helicopter. The franchise went dormant at Kualoa for over two decades before Jurassic World (2015) returned for the Gyrosphere field and valley scenes. Fallen Kingdom (2018) came back again for the volcanic eruption evacuation — the same valley road the M-Trucks run today.<br><br>The Ko'olau cliffs behind you are around 3,000 feet tall, formed by volcanic collapse roughly 2.5 million years ago.`
   },
-  // STAS → JP1 BTS
-  'STAS': {
+  // Readout → Logo → Readout : JP1 BTS
+  'OLO': {
     style: 'green',
     icon: '🎬',
     label: '// INGEN ARCHIVE — 1993 //',
     title: 'JURASSIC PARK',
-    body: `The helicopter arrival sequence — the moment Grant whispers "It's a dinosaur" — was filmed right here in Kaʻaʻawa Valley. Those are the Ko'olau ridgelines you're looking at now.<br><br>Spielberg originally planned to rely entirely on animatronics. ILM's CGI test reel of a running T-Rex changed his mind in a single meeting. The film ended up using both — the close, tactile shots are Stan Winston animatronics; the wide running shots are ILM.<br><br>Principal photography wrapped in November 1992. The film released June 11, 1993 and grossed $1 billion worldwide.`
+    body: `The helicopter arrival sequence — the moment Grant whispers "It's a dinosaur" — was filmed right here in Kaʻaʻawa Valley. Those are the Ko'olau ridgelines you're looking at now.<br><br>Spielberg originally planned to rely entirely on animatronics. ILM's CGI test reel of a running T-Rex changed his mind in a single meeting. The film ended up using both — close tactile shots are Stan Winston animatronics; the wide running shots are ILM.<br><br>Principal photography wrapped in November 1992. The film released June 11, 1993 and grossed $1 billion worldwide.`
   },
-  // ASBA → Fallen Kingdom BTS
-  'ASBA': {
+  // Paddock-name → Status → Paddock-name : Fallen Kingdom BTS
+  'NSN': {
     style: '',
     icon: '🌋',
     label: '// INGEN ARCHIVE — 2018 //',
@@ -501,21 +502,24 @@ const easterEggs = {
   }
 };
 
-function handleBtnSequence(code) {
-  clearTimeout(seqTimer);
-  btnSequence.push(code);
-  if (btnSequence.length > 4) btnSequence.shift();
-  const last4 = btnSequence.slice(-4).join('');
-  const last3 = btnSequence.slice(-3).join('');
-  const last2 = btnSequence.slice(-2).join('');
-  const egg = easterEggs[last4] || easterEggs[last3] || easterEggs[last2];
-  if (egg && (easterEggs[last4] ? last4.length === 4 : easterEggs[last3] ? last3.length === 3 : last2.length === 2)) {
-    btnSequence = [];
-    clearTimeout(seqTimer);
-    showEgg(egg);
-    return;
+function handleZoneTap(code) {
+  clearTimeout(zoneTimer);
+  zoneSequence.push(code);
+  if (zoneSequence.length > 4) zoneSequence.shift();
+
+  // Check longest match first
+  for (let len = 4; len >= 2; len--) {
+    if (zoneSequence.length >= len) {
+      const key = zoneSequence.slice(-len).join('');
+      if (zoneEggs[key] && key.length === len) {
+        zoneSequence = [];
+        clearTimeout(zoneTimer);
+        showEgg(zoneEggs[key]);
+        return;
+      }
+    }
   }
-  seqTimer = setTimeout(() => { btnSequence = []; }, 5000);
+  zoneTimer = setTimeout(() => { zoneSequence = []; }, 4000);
 }
 
 // Easter egg modal
@@ -582,6 +586,21 @@ makeTripleTap('radar-canvas', () => {
     body: `The GPS coordinates displayed on this terminal are real.<br><br><strong style="color:var(--blue-bright);letter-spacing:2px">21.5082°N, 157.8375°W</strong><br><br>That's Kaʻaʻawa Valley, Kualoa Ranch, Oʻahu, Hawaiʻi.<br><br>The same valley that Spielberg's helicopter circled in 1992 before he landed and said they'd found their island. The same valley that a production crew flooded with pyrotechnic ash in 2017. The same valley the M-Trucks are running right now.<br><br>Life, uh... finds a way.`
   });
 }, 900);
+
+// ── ZONE SEQUENCE LISTENERS ───────────────────────────────────────────────────
+// Tap passive zones in order to unlock hidden files.
+// P=paddock-tap  L=logo-tap  R=radar-canvas  S=status-pill  C=scan-label  O=readout  N=paddock-name-tap
+[
+  ['logo-tap',         'L'],
+  ['radar-canvas',     'R'],
+  ['status-pill',      'S'],
+  ['scan-label',       'C'],
+  ['readout',          'O'],
+  ['paddock-name-tap', 'N'],
+].forEach(([id, code]) => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', () => handleZoneTap(code));
+});
 </script>
 </body>
 </html>
