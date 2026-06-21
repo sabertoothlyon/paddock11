@@ -169,6 +169,22 @@
   #modal-title { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: 6px; color: var(--red-alert); text-shadow: 0 0 20px var(--red-alert); margin-bottom: 10px; }
   #modal-body { font-size: 13px; color: var(--white); line-height: 1.8; margin-bottom: 20px; }
   #modal-close { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 3px; padding: 10px 30px; border: 1px solid var(--blue-mid); background: transparent; color: var(--blue-bright); cursor: pointer; text-transform: uppercase; -webkit-tap-highlight-color: transparent; }
+
+  /* EASTER EGG MODAL */
+  #egg-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,20,0.95); z-index: 300; align-items: center; justify-content: center; flex-direction: column; padding: 24px; }
+  #egg-modal.show { display: flex; }
+  #egg-box { border: 1px solid var(--blue-bright); padding: 30px 32px; text-align: center; max-width: 480px; width: 100%; box-shadow: 0 0 40px rgba(0,212,255,0.25); animation: modalIn 0.3s ease; position: relative; }
+  #egg-box.nedry { border-color: var(--amber); box-shadow: 0 0 40px rgba(255,170,0,0.3); }
+  #egg-box.green { border-color: var(--green-ok); box-shadow: 0 0 40px rgba(0,255,136,0.2); }
+  #egg-label { font-size: 8px; letter-spacing: 3px; color: var(--white-dim); margin-bottom: 6px; }
+  #egg-title { font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 4px; color: var(--blue-bright); text-shadow: 0 0 16px var(--blue-bright); margin-bottom: 12px; }
+  #egg-box.nedry #egg-title { color: var(--amber); text-shadow: 0 0 16px var(--amber); }
+  #egg-box.green #egg-title { color: var(--green-ok); text-shadow: 0 0 16px var(--green-ok); }
+  #egg-body { font-size: 12px; color: var(--white); line-height: 1.85; margin-bottom: 22px; }
+  #egg-img { font-size: 48px; display: block; margin: 0 auto 14px; }
+  #egg-close { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 3px; padding: 9px 28px; border: 1px solid var(--blue-mid); background: transparent; color: var(--blue-bright); cursor: pointer; text-transform: uppercase; -webkit-tap-highlight-color: transparent; }
+  #egg-box.nedry #egg-close { border-color: var(--amber); color: var(--amber); }
+  #egg-box.green #egg-close { border-color: var(--green-ok); color: var(--green-ok); }
 </style>
 </head>
 <body>
@@ -177,12 +193,12 @@
   <!-- ── THIRD 1: Header + Radar + Readout ── -->
   <div id="third-top">
     <div id="header">
-      <div class="logo-area">
+      <div class="logo-area" id="logo-tap">
         <div class="logo-main">JURASSIC WORLD</div>
         <div class="logo-sub">ASSET CONTAINMENT SYSTEM · v4.2.1</div>
       </div>
       <div class="header-center">
-        <div class="paddock-id">PADDOCK 11</div>
+        <div class="paddock-id" id="paddock-tap">PADDOCK 11</div>
         <div class="paddock-name">INDOMINUS REX</div>
       </div>
       <div class="header-right">
@@ -273,8 +289,15 @@
 
 </div>
 
-<div id="modal">
-  <div id="modal-box">
+<div id="egg-modal">
+  <div id="egg-box">
+    <div id="egg-label">// CLASSIFIED //</div>
+    <div id="egg-img">🦖</div>
+    <div id="egg-title">UNLOCKED</div>
+    <div id="egg-body"></div>
+    <button id="egg-close" onclick="closeEgg()">[ DISMISS ]</button>
+  </div>
+</div>
     <div id="modal-title">⚠ CONTAINMENT BREACH</div>
     <div id="modal-body"></div>
     <button id="modal-close" onclick="closeModal()">ACKNOWLEDGE &amp; CLOSE</button>
@@ -436,6 +459,137 @@ function runSystemCheck(){
 function playTone(freq,duration,type='sine'){
   try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const osc=ctx.createOscillator();const gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type=type;osc.frequency.setValueAtTime(freq,ctx.currentTime);gain.gain.setValueAtTime(0.15,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+duration);osc.start(ctx.currentTime);osc.stop(ctx.currentTime+duration);}catch(e){}
 }
+
+// ── EASTER EGGS ──────────────────────────────────────────────────────────────
+
+// Button sequence tracker (T=thermal, A=asset, B=breach, S=system)
+let btnSequence = [];
+let seqTimer = null;
+
+const easterEggs = {
+  // TASB → "Clever girl"
+  'TASB': {
+    style: '',
+    icon: '🦕',
+    label: '// RAPTOR UNIT ONLINE //',
+    title: 'CLEVER GIRL',
+    body: `Muldoon's last words before Raptor Unit Delta flanked him in the JP1 paddock sequence — filmed on location in Kauaʻi, 1992.<br><br>Robert Muldoon's actor Bob Peck improvised the delivery. Spielberg kept it in one take.<br><br>The raptors in that scene were a combination of full-scale rod puppets built by Stan Winston Studio and crew members in suits. No CGI.`
+  },
+  // BBTT → Kualoa Ranch filming history
+  'BBTT': {
+    style: 'green',
+    icon: '🌿',
+    label: '// KUALOA RANCH ARCHIVE //',
+    title: 'KAʻAʻAWA VALLEY',
+    body: `The valley you're standing in — Kaʻaʻawa — has appeared in over 70 feature films and TV productions since the 1950s.<br><br>Jurassic Park (1993) used it as the main dinosaur plains. Jurassic World (2015) returned for the Gyrosphere field sequences. Fallen Kingdom (2018) filmed the eruption evacuation scenes along the valley floor — the same road the M-Trucks run today.<br><br>The Ko'olau cliffs in the background are around 3,000 feet tall and were formed by volcanic collapse roughly 2.5 million years ago.`
+  },
+  // STAS → JP1 BTS
+  'STAS': {
+    style: 'green',
+    icon: '🎬',
+    label: '// INGEN ARCHIVE — 1993 //',
+    title: 'JURASSIC PARK',
+    body: `The iconic waterfall scene where Grant and the kids cling to the fence while the T-Rex roars — that was shot at Mānoa Falls on Oʻahu, not at Kualoa.<br><br>But the helicopter arrival sequence in the opening? That's Kaʻaʻawa Valley. The lush green plains Grant sees from the air when he whispers "It's a dinosaur" are the same mountains visible from this terminal's location.<br><br>Spielberg originally planned animatronics only. ILM's CGI test reel of a T-Rex running changed his mind in a single meeting.`
+  },
+  // ASBA → Fallen Kingdom BTS
+  'ASBA': {
+    style: '',
+    icon: '🌋',
+    label: '// INGEN ARCHIVE — 2018 //',
+    title: 'FALLEN KINGDOM',
+    body: `Jurassic World: Fallen Kingdom (2018) returned to Kualoa for the volcanic eruption evacuation sequence. The crew rigged pyrotechnic ash mortars along the valley road to simulate lava flow.<br><br>The brachiosaurus silhouette on the dock — the most talked-about shot in the film — was added entirely in post. No location shoot. Director J.A. Bayona said it was the emotional centerpiece he built the whole film around.<br><br>Production used roughly 200 extras from Oʻahu for the evacuation crowd scenes.`
+  }
+};
+
+function handleBtnSequence(code) {
+  clearTimeout(seqTimer);
+  btnSequence.push(code);
+  if (btnSequence.length > 4) btnSequence.shift();
+  const key = btnSequence.join('');
+  const egg = easterEggs[key] || (btnSequence.length >= 4 ? easterEggs[btnSequence.slice(-4).join('')] : null);
+  if (egg) {
+    btnSequence = [];
+    clearTimeout(seqTimer);
+    showEgg(egg);
+    return;
+  }
+  seqTimer = setTimeout(() => { btnSequence = []; }, 5000);
+}
+
+// Hook into existing button functions via wrapper
+const _origThermal = runThermalScan;
+runThermalScan = function() { handleBtnSequence('T'); _origThermal(); };
+const _origAsset = runAssetStatus;
+runAssetStatus = function() { handleBtnSequence('A'); _origAsset(); };
+const _origAlert = runAlertSequence;
+runAlertSequence = function() { handleBtnSequence('B'); _origAlert(); };
+const _origCheck = runSystemCheck;
+runSystemCheck = function() { handleBtnSequence('S'); _origCheck(); };
+
+// Easter egg modal
+function showEgg(egg) {
+  const box = document.getElementById('egg-box');
+  box.className = egg.style ? egg.style : '';
+  document.getElementById('egg-label').textContent = egg.label;
+  document.getElementById('egg-img').textContent = egg.icon;
+  document.getElementById('egg-title').textContent = egg.title;
+  document.getElementById('egg-body').innerHTML = egg.body;
+  document.getElementById('egg-modal').classList.add('show');
+  addFeedEntry('// CLASSIFIED FILE ACCESSED //', 'warn');
+  playTone(528, 0.6, 'sine');
+}
+function closeEgg() {
+  document.getElementById('egg-modal').classList.remove('show');
+}
+
+// ── TRIPLE-TAP ZONES ─────────────────────────────────────────────────────────
+
+function makeTripleTap(elementId, callback, timeoutMs) {
+  let taps = 0, tapTimer = null;
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  el.addEventListener('click', () => {
+    taps++;
+    clearTimeout(tapTimer);
+    if (taps >= 3) { taps = 0; callback(); return; }
+    tapTimer = setTimeout(() => { taps = 0; }, timeoutMs || 800);
+  });
+}
+
+// PADDOCK 11 title → Nedry "magic word"
+makeTripleTap('paddock-tap', () => {
+  const box = document.getElementById('egg-box');
+  box.className = 'nedry';
+  document.getElementById('egg-label').textContent = '// ACCESS DENIED — NODE 021 //';
+  document.getElementById('egg-img').textContent = '🖥️';
+  document.getElementById('egg-title').textContent = 'AH AH AH';
+  document.getElementById('egg-body').innerHTML = `You didn't say the magic word.<br><br><em style="color:var(--amber);font-size:15px;letter-spacing:2px">AH AH AH.</em><br><br>Dennis Nedry's lockout screen looped this message across every InGen workstation when he disabled the park's security systems on July 11, 1993 — buying himself a 18-minute window to reach the East Dock with the embryo canister.<br><br>He never made it.`;
+  document.getElementById('egg-modal').classList.add('show');
+  addFeedEntry('ACCESS DENIED — NEDRY PROTOCOL', 'err');
+  playTone(200, 0.4, 'sawtooth');
+});
+
+// JURASSIC WORLD logo → InGen secret
+makeTripleTap('logo-tap', () => {
+  showEgg({
+    style: '',
+    icon: '🧬',
+    label: '// INGEN INTERNAL MEMO //',
+    title: 'SITE B — ISLA SORNA',
+    body: `Kualoa Ranch served as a filming location double for both Isla Nublar and, in wide establishing shots, Isla Sorna across multiple productions.<br><br>The ranch's 4,000 acres include four distinct valleys. Productions typically use Kaʻaʻawa as the primary "island interior" — it reads as isolated and primeval on camera. The Ko'olau ridgeline's near-vertical walls make it effectively impossible to shoot any modern infrastructure into frame.<br><br>InGen's fictional Site B operations were partially inspired by real DARPA research into accelerated growth factors. The embryo storage unit Nedry stole held 15 species — the Barbasol can held dry ice at -196°C.`
+  });
+});
+
+// Radar canvas → real coordinates easter egg
+makeTripleTap('radar-canvas', () => {
+  showEgg({
+    style: 'green',
+    icon: '📡',
+    label: '// SECTOR 11 — TRUE COORDINATES //',
+    title: 'YOU FOUND IT',
+    body: `The GPS coordinates displayed on this terminal are real.<br><br><strong style="color:var(--blue-bright);letter-spacing:2px">21.5082°N, 157.8375°W</strong><br><br>That's Kaʻaʻawa Valley, Kualoa Ranch, Oʻahu, Hawaiʻi.<br><br>The same valley that Spielberg's helicopter circled in 1992 before he landed and said they'd found their island. The same valley that a production crew flooded with pyrotechnic ash in 2017. The same valley the M-Trucks are running right now.<br><br>Life, uh... finds a way.`
+  });
+}, 900);
 </script>
 </body>
 </html>
